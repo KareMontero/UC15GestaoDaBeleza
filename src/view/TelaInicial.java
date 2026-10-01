@@ -15,12 +15,12 @@ public class TelaInicial extends javax.swing.JFrame {
     public TelaInicial(Usuario usuario) {
         initComponents();
         this.usuarioLogado = usuario;
-  if (usuario != null) {
-        this.setTitle("Instituto da Beleza - Logado como: " + usuario.getLogin());
-        configurarPermissoes();
-    } else {
-        this.setTitle("Instituto da Beleza - Usuário não identificado");
-    }
+        if (usuario != null) {
+            this.setTitle("Instituto da Beleza - Logado como: " + usuario.getLogin());
+            configurarPermissoes();
+        } else {
+            this.setTitle("Instituto da Beleza - Usuário não identificado");
+        }
         this.setTitle("Instituto da Beleza - Logado como: " + usuario.getLogin());
 
         configurarPermissoes();
@@ -58,6 +58,8 @@ public class TelaInicial extends javax.swing.JFrame {
         btnCadForn = new javax.swing.JButton();
         btnCadProd = new javax.swing.JButton();
         btnCadFunc = new javax.swing.JButton();
+        btnKitServico = new javax.swing.JButton();
+        btnKitServico1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -69,7 +71,7 @@ public class TelaInicial extends javax.swing.JFrame {
 
         btnCadCliente.setBackground(new java.awt.Color(255, 255, 0));
         btnCadCliente.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        btnCadCliente.setText("Cadastro de Cliente");
+        btnCadCliente.setText("Clientes");
         btnCadCliente.setToolTipText("Cadastrar clientes");
         btnCadCliente.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnCadCliente.addActionListener(this::btnCadClienteActionPerformed);
@@ -97,75 +99,92 @@ public class TelaInicial extends javax.swing.JFrame {
 
         btnCadForn.setBackground(new java.awt.Color(255, 255, 0));
         btnCadForn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        btnCadForn.setText("Cadastro de Fornecedores");
+        btnCadForn.setText("Fornecedores");
         btnCadForn.setToolTipText("Cadastrar fornecedor");
         btnCadForn.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnCadForn.addActionListener(this::btnCadFornActionPerformed);
 
         btnCadProd.setBackground(new java.awt.Color(255, 255, 0));
         btnCadProd.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        btnCadProd.setText("Cadastro de Produtos");
+        btnCadProd.setText("Produtos");
         btnCadProd.setToolTipText("Cadastrar produtos");
         btnCadProd.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnCadProd.addActionListener(this::btnCadProdActionPerformed);
 
         btnCadFunc.setBackground(new java.awt.Color(255, 255, 0));
         btnCadFunc.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        btnCadFunc.setText("Cadastro de Funcionários");
+        btnCadFunc.setText("Funcionários");
         btnCadFunc.setToolTipText("Cadastrar funcionários");
         btnCadFunc.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnCadFunc.addActionListener(this::btnCadFuncActionPerformed);
+
+        btnKitServico.setBackground(new java.awt.Color(255, 255, 0));
+        btnKitServico.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        btnKitServico.setText("Serviços");
+        btnKitServico.setToolTipText("Relatórios de produtos e serviços");
+        btnKitServico.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnKitServico.addActionListener(this::btnKitServicoActionPerformed);
+
+        btnKitServico1.setBackground(new java.awt.Color(255, 255, 0));
+        btnKitServico1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        btnKitServico1.setText("KitServiços");
+        btnKitServico1.setToolTipText("Relatórios de produtos e serviços");
+        btnKitServico1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnKitServico1.addActionListener(this::btnKitServico1ActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(98, 98, 98)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(14, 14, 14)
                 .addComponent(jLabel1)
-                .addGap(0, 106, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 106, Short.MAX_VALUE)
+                .addComponent(btnSair, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(52, 52, 52)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnCadFunc)
-                            .addComponent(btnCadForn)
-                            .addComponent(btnCadCliente))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnAgenda)
-                            .addComponent(btnCadProd))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(btnRelatorios)
-                                .addGap(94, 94, 94))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(btnSair, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(80, 80, 80))))))
+                    .addComponent(btnCadCliente)
+                    .addComponent(btnCadProd)
+                    .addComponent(btnCadForn)
+                    .addComponent(btnCadFunc))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnAgenda)
+                    .addComponent(btnRelatorios)
+                    .addComponent(btnKitServico)
+                    .addComponent(btnKitServico1))
+                .addGap(97, 97, 97))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(73, 73, 73)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnRelatorios)
-                    .addComponent(btnAgenda))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
                 .addGap(18, 18, 18)
-                .addComponent(btnCadCliente)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnSair)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(14, 14, 14)
+                        .addComponent(jLabel1)
+                        .addGap(34, 34, 34)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(btnAgenda)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnRelatorios))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(btnCadCliente)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnCadForn)))))
                 .addGap(18, 18, 18)
-                .addComponent(btnCadForn)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnKitServico)
+                    .addComponent(btnCadProd))
                 .addGap(18, 18, 18)
-                .addComponent(btnCadFunc)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnCadProd)
-                    .addComponent(btnSair))
-                .addGap(49, 49, 49))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnKitServico1)
+                    .addComponent(btnCadFunc))
+                .addContainerGap(176, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -191,52 +210,59 @@ public class TelaInicial extends javax.swing.JFrame {
     private void btnCadClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadClienteActionPerformed
 
         CadastroCliente cadCli = new CadastroCliente(this.usuarioLogado);
+        cadCli.setLocationRelativeTo(this);
         cadCli.setVisible(true);
 
     }//GEN-LAST:event_btnCadClienteActionPerformed
 
     private void btnCadFornActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadFornActionPerformed
 
-        CadastroFornecedor cadForn = new CadastroFornecedor(this.usuarioLogado); // Passa o usuário logado adiante!
-        cadForn.setLocationRelativeTo(null);
+        CadastroFornecedor cadForn = new CadastroFornecedor(this.usuarioLogado);
+        cadForn.setLocationRelativeTo(this);
         cadForn.setVisible(true);
-        this.dispose();
+
 
     }//GEN-LAST:event_btnCadFornActionPerformed
 
     private void btnCadProdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadProdActionPerformed
 
-        CadastroProduto cadProd = new CadastroProduto(this.usuarioLogado); // Passa o usuário logado adiante!
-        cadProd.setLocationRelativeTo(null);
+        CadastroProduto cadProd = new CadastroProduto(this.usuarioLogado);
+        cadProd.setLocationRelativeTo(this);
         cadProd.setVisible(true);
-        this.dispose();
 
     }//GEN-LAST:event_btnCadProdActionPerformed
 
     private void btnCadFuncActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadFuncActionPerformed
 
-        // No seu construtor da TelaInicial, a variável que guarda o login se chama 'usuario'
         CadastroFuncionario cadastrar = new CadastroFuncionario(this.usuarioLogado);
-
-        cadastrar.setLocationRelativeTo(null);
+        cadastrar.setLocationRelativeTo(this);
         cadastrar.setVisible(true);
-        this.dispose(); // Fecha a Tela Inicial
 
     }//GEN-LAST:event_btnCadFuncActionPerformed
 
     private void btnAgendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgendaActionPerformed
 
-        Agenda agenda = new Agenda();
-        agenda.setVisible(true);
 
     }//GEN-LAST:event_btnAgendaActionPerformed
 
     private void btnRelatoriosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRelatoriosActionPerformed
 
-        Relatorio relatorio = new Relatorio();
-        relatorio.setVisible(true);
 
     }//GEN-LAST:event_btnRelatoriosActionPerformed
+
+    private void btnKitServicoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKitServicoActionPerformed
+
+        CadastroServico cadServico = new CadastroServico(this.usuarioLogado);
+        cadServico.setLocationRelativeTo(this);
+        cadServico.setVisible(true);
+
+    }//GEN-LAST:event_btnKitServicoActionPerformed
+
+    private void btnKitServico1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKitServico1ActionPerformed
+  CadastroKitServico cadKit = new CadastroKitServico(this.usuarioLogado);
+        cadKit.setLocationRelativeTo(this);
+        cadKit.setVisible(true);
+    }//GEN-LAST:event_btnKitServico1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -269,6 +295,8 @@ public class TelaInicial extends javax.swing.JFrame {
     private javax.swing.JButton btnCadForn;
     private javax.swing.JButton btnCadFunc;
     private javax.swing.JButton btnCadProd;
+    private javax.swing.JButton btnKitServico;
+    private javax.swing.JButton btnKitServico1;
     private javax.swing.JButton btnRelatorios;
     private javax.swing.JButton btnSair;
     private javax.swing.JLabel jLabel1;
