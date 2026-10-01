@@ -2,88 +2,43 @@ package model;
 
 public class KitServico {
 
-    private String nomeServico;
-    private String descricao;
-    private String categoriaServico;
-    private Produto produto;
-    private double precoServico;
-    private double valorKit;
-    private boolean ativo;
-    private Fornecedor fornecedor;
+    private int servicoId;
+    private int produtoId;
+    private int qtidadeProdutoPorServico;
 
     public KitServico() {
     }
 
-    public KitServico(String nomeServico, String descricao, String categoriaServico, Produto produto, double precoServico, double valorKit, double qtidadeProdutoKit, boolean ativo) {
-        this.nomeServico = nomeServico;
-        this.descricao = descricao;
-        this.categoriaServico = categoriaServico;
-        this.produto = produto;
-        this.precoServico = precoServico;
-        this.valorKit = valorKit;
-       
-        this.ativo = ativo;
+    public KitServico(int servicoId, int produtoId, int qtidadeProdutoPorServico) {
+        this.servicoId = servicoId;
+        this.produtoId = produtoId;
+        this.qtidadeProdutoPorServico = qtidadeProdutoPorServico;
     }
 
-    public String getNomeServico() {
-        return nomeServico;
+    public int getServicoId() {
+        return servicoId;
     }
 
-    public void setNomeServico(String nomeServico) {
-        this.nomeServico = nomeServico;
+    public void setServicoId(int servicoId) {
+        this.servicoId = servicoId;
     }
 
-    public String getDescricao() {
-        return descricao;
+    public int getProdutoId() {
+        return produtoId;
     }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
+    public void setProdutoId(int produtoId) {
+        this.produtoId = produtoId;
     }
 
-    public String getCategoriaServico() {
-        return categoriaServico;
+    public int getQtidadeProdutoPorServico() {
+        return qtidadeProdutoPorServico;
     }
 
-    public void setCategoriaServico(String categoriaServico) {
-        this.categoriaServico = categoriaServico;
+    public void setQtidadeProdutoPorServico(int qtidadeProdutoPorServico) {
+        this.qtidadeProdutoPorServico = qtidadeProdutoPorServico;
     }
-
-    public Produto getProduto() {
-        return produto;
-    }
-
-    public void setProduto(Produto produto) {
-        this.produto = produto;
-    }
-
-    public double getPrecoServico() {
-        return precoServico;
-    }
-
-    public void setPrecoServico(double precoServico) {
-        this.precoServico = precoServico;
-    }
-
-    public double getValorKit() {
-        return valorKit;
-    }
-
-    public void setValorKit(double valorKit) {
-        this.valorKit = valorKit;
-    }
-
-
-
-    public boolean isAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
-    }
-
     
-
+    
 
 }
