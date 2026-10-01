@@ -1,20 +1,20 @@
-
 package view;
 
 import model.Servico;
 import model.ServicoDAO;
 
-
 public class CadastroServico extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CadastroServico.class.getName());
+    private model.Usuario usuarioLogado;
 
-    /**
-     * Creates new form CadastroServico
-     */
-    public CadastroServico() {
+    // Adicione isto perto da declaração do 'usuarioLogado'
+    private javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter;
+
+    public CadastroServico(model.Usuario usuario) {
+        this.usuarioLogado = usuario;
         initComponents();
-         atualizarTabelaServicos();
+        atualizarTabelaServicos();
     }
 
     /**
@@ -40,8 +40,14 @@ public class CadastroServico extends javax.swing.JFrame {
         btnSalvar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblServicos = new javax.swing.JTable();
+        btnTelaInicial = new javax.swing.JButton();
+        btnExcluir = new javax.swing.JButton();
+        btnPesquisar = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        txtPesquisar = new javax.swing.JTextField();
+        btnLimparCampos = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 204));
 
@@ -60,64 +66,104 @@ public class CadastroServico extends javax.swing.JFrame {
 
         cbCategoria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecione a categoria", "manicure", "depilacao", "cabelo", "maquilagem", " " }));
 
-        chkEstoque.setText("Este serviço consome produtos do estoque");
+        chkEstoque.setText("Consome produtos do estoque");
 
         btnSalvar.setText("SALVAR");
         btnSalvar.addActionListener(this::btnSalvarActionPerformed);
 
         tblServicos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "ID", "Serviço", "Preço", "Categoria", "Estoque"
             }
         ));
         jScrollPane1.setViewportView(tblServicos);
+
+        btnTelaInicial.setText("TELA INICIAL");
+        btnTelaInicial.addActionListener(this::btnTelaInicialActionPerformed);
+
+        btnExcluir.setText("Excluir");
+        btnExcluir.addActionListener(this::btnExcluirActionPerformed);
+
+        btnPesquisar.setText("Pesquisar");
+        btnPesquisar.addActionListener(this::btnPesquisarActionPerformed);
+
+        jLabel6.setText("Pesquisar:");
+
+        txtPesquisar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtPesquisarKeyReleased(evt);
+            }
+        });
+
+        btnLimparCampos.setText("Limpar");
+        btnLimparCampos.addActionListener(this::btnLimparCamposActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtServico, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtDescricao, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtPreco, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addGap(18, 18, 18)
-                        .addComponent(cbCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(87, 87, 87)
-                        .addComponent(btnSalvar)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(chkEstoque, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jScrollPane1)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtDescricao, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtPreco, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtServico, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel6)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnPesquisar)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnExcluir)
+                                .addGap(42, 42, 42))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel5)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(cbCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(btnLimparCampos))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(0, 0, Short.MAX_VALUE)
+                                        .addComponent(btnSalvar))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel1)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(btnTelaInicial)))
+                                .addGap(27, 27, 27)))))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addComponent(jLabel1)
-                .addGap(26, 26, 26)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(btnTelaInicial))
+                .addGap(24, 24, 24)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(txtServico, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -133,12 +179,20 @@ public class CadastroServico extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(cbCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSalvar))
+                    .addComponent(btnLimparCampos))
                 .addGap(18, 18, 18)
-                .addComponent(chkEstoque)
-                .addGap(28, 28, 28)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(55, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(chkEstoque)
+                    .addComponent(btnSalvar))
+                .addGap(26, 26, 26)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnExcluir)
+                    .addComponent(btnPesquisar)
+                    .addComponent(jLabel6)
+                    .addComponent(txtPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -212,35 +266,134 @@ public class CadastroServico extends javax.swing.JFrame {
             // Exibe qualquer outro erro inesperado que possa acontecer
             javax.swing.JOptionPane.showMessageDialog(this, "Erro ao salvar serviço: " + e.getMessage());
         }
-        
+
         atualizarTabelaServicos();
 
     }//GEN-LAST:event_btnSalvarActionPerformed
 
-    private void atualizarTabelaServicos() {
-    // 1. Instancia o DAO para buscar os dados do banco
-    ServicoDAO dao = new ServicoDAO();
-    java.util.List<Servico> lista = dao.listarTodos();
+    private void btnTelaInicialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTelaInicialActionPerformed
 
-    // 2. Pega o modelo da tabela configurada na tela (DefaultTableModel)
-    javax.swing.table.DefaultTableModel modeloDefault = (javax.swing.table.DefaultTableModel) tblServicos.getModel();
+        TelaInicial telaInicial = new TelaInicial(this.usuarioLogado);
+        telaInicial.setLocationRelativeTo(null);
+        telaInicial.setVisible(true);
+        this.dispose();
+
+    }//GEN-LAST:event_btnTelaInicialActionPerformed
+
+    private void btnLimparCamposActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparCamposActionPerformed
+        limparCampos();
+        txtServico.requestFocusInWindow();
+    }//GEN-LAST:event_btnLimparCamposActionPerformed
+
+    private void btnPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarActionPerformed
+        filtrarTabela();
+    }//GEN-LAST:event_btnPesquisarActionPerformed
+
+    private void txtPesquisarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPesquisarKeyReleased
+                                            
+    String texto = txtPesquisar.getText().trim();
     
-    // 3. Limpa as linhas antigas da tabela para não duplicar os dados
-    modeloDefault.setRowCount(0);
-
-    // 4. Percorre a lista de serviços vindos do banco e joga dentro da tabela da tela
-    for (Servico s : lista) {
-        Object[] linha = {
-            s.getIdServico(),
-            s.getServico(),
-            s.getDescricao(),
-            s.getPreco(),
-            s.getCategoria(),
-            s.isEstoqueProduto() ? "Sim" : "Não" // Deixa o visual mais amigável
-        };
-        modeloDefault.addRow(linha);
+    if (texto.isEmpty()) {
+        sorter.setRowFilter(null); // Mostra tudo se o campo estiver vazio
+    } else {
+        // Filtra pelo Nome do Serviço (Coluna 1) ignorando maiúsculas/minúsculas (?i)
+        sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + texto, 1));
     }
-}
+                                      
+
+    }//GEN-LAST:event_txtPesquisarKeyReleased
+
+    private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
+                                        
+    // 1. Verifica se o usuário selecionou uma linha na tabela
+    int linhaSelecionada = tblServicos.getSelectedRow();
+    
+    if (linhaSelecionada == -1) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Por favor, selecione um serviço na tabela para excluir.");
+        return;
+    }
+    
+    // Convertemos o índice da linha da JTable para o índice correto do modelo (importante quando a tabela está filtrada!)
+    int linhaModelo = tblServicos.convertRowIndexToModel(linhaSelecionada);
+    
+    // 2. Pega o ID (Coluna 0) e o Nome (Coluna 1) usando a linha correta do modelo
+    int id = (int) tblServicos.getModel().getValueAt(linhaModelo, 0);
+    String nomeServico = tblServicos.getModel().getValueAt(linhaModelo, 1).toString();
+    
+    // 3. Pede a confirmação do usuário (boa prática de UX)
+    int confirmar = javax.swing.JOptionPane.showConfirmDialog(this, 
+            "Tem certeza que deseja excluir o serviço '" + nomeServico + "'?", 
+            "Confirmar Exclusão", javax.swing.JOptionPane.YES_NO_OPTION);
+            
+    if (confirmar == javax.swing.JOptionPane.YES_OPTION) {
+        try {
+            // 4. Instancia o seu DAO e manda deletar do MySQL
+            ServicoDAO dao = new ServicoDAO();
+            
+            // ATENÇÃO: Verifique na sua classe ServicoDAO se o seu método se chama 'excluir' ou 'deletar'
+            dao.excluir(id); 
+            
+            javax.swing.JOptionPane.showMessageDialog(this, "Serviço excluído com sucesso!");
+            
+            // 5. Atualiza a tabela na tela e limpa a pesquisa (caso tenha algo digitado)
+            if (txtPesquisar != null) txtPesquisar.setText("");
+            if (sorter != null) sorter.setRowFilter(null);
+            
+            atualizarTabelaServicos();
+            
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao excluir serviço: " + e.getMessage());
+        }
+    }
+
+    }//GEN-LAST:event_btnExcluirActionPerformed
+
+    private void atualizarTabelaServicos() {
+        // 1. Instancia o DAO para buscar os dados do banco
+        ServicoDAO dao = new ServicoDAO();
+        java.util.List<Servico> lista = dao.listarTodos();
+
+        // 2. Pega o modelo da tabela configurada na tela (DefaultTableModel)
+        javax.swing.table.DefaultTableModel modeloDefault = (javax.swing.table.DefaultTableModel) tblServicos.getModel();
+
+        // 3. Limpa as linhas antigas da tabela para não duplicar os dados
+        modeloDefault.setRowCount(0);
+
+        // 4. Percorre a lista de serviços vindos do banco e joga dentro da tabela da tela
+        for (Servico s : lista) {
+            Object[] linha = {
+                s.getIdServico(),
+                s.getServico(),
+                s.getDescricao(),
+                s.getPreco(),
+                s.getCategoria(),
+                s.isEstoqueProduto() ? "Sim" : "Não" // Deixa o visual mais amigável
+            };
+            modeloDefault.addRow(linha);
+        }
+        sorter = new javax.swing.table.TableRowSorter<>(modeloDefault);
+        tblServicos.setRowSorter(sorter);
+    }
+
+    private void limparCampos() {
+        txtServico.setText("");
+        txtDescricao.setText("");
+        txtPreco.setText("");
+        cbCategoria.setSelectedIndex(0);
+        chkEstoque.setSelected(false);
+    }
+
+    private void filtrarTabela() {
+
+        String texto = txtPesquisar.getText().trim();
+
+        if (texto.isEmpty()) {
+            sorter.setRowFilter(null);
+        } else {
+
+            sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + texto, 1));
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -264,11 +417,15 @@ public class CadastroServico extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new CadastroServico().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new CadastroServico(null).setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnExcluir;
+    private javax.swing.JButton btnLimparCampos;
+    private javax.swing.JButton btnPesquisar;
     private javax.swing.JButton btnSalvar;
+    private javax.swing.JButton btnTelaInicial;
     private javax.swing.JComboBox<String> cbCategoria;
     private javax.swing.JCheckBox chkEstoque;
     private javax.swing.JLabel jLabel1;
@@ -276,11 +433,12 @@ public class CadastroServico extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable tblServicos;
     private javax.swing.JTextField txtDescricao;
+    private javax.swing.JTextField txtPesquisar;
     private javax.swing.JTextField txtPreco;
     private javax.swing.JTextField txtServico;
     // End of variables declaration//GEN-END:variables

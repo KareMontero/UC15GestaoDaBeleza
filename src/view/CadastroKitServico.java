@@ -5,16 +5,28 @@ import model.KitServicoDAO;
 import model.Produto;
 import model.ProdutoDAO;
 import model.Servico;
+import model.Usuario;
 
 public class CadastroKitServico extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CadastroKitServico.class.getName());
+    private javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter;
+    private model.Usuario usuarioLogado;
 
-    /**
-     * Creates new form CadastroKitServico
-     */
-    public CadastroKitServico() {
+    public CadastroKitServico(model.Usuario usuario) {
+        this.usuarioLogado = usuario;
         initComponents();
+
+        // 1. Limpa qualquer resíduo dos menus
+        cbServicos.removeAllItems();
+        cbProdutos.removeAllItems();
+
+        // 2. CHAMA OS MÉTODOS REAIS: Eles vão buscar os dados direto do MySQL! ✨
+        carregarServicosDoBanco();
+        carregarProdutosDoBanco();
+
+        // 3. Atualiza a tabela para exibir os kits do primeiro serviço da lista
+        atualizarTabelaItensKit();
     }
 
     /**
@@ -26,8 +38,6 @@ public class CadastroKitServico extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tblItensKit = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -38,6 +48,32 @@ public class CadastroKitServico extends javax.swing.JFrame {
         txtQuantidade = new javax.swing.JTextField();
         btnAdicionar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
+        tblItensKit = new javax.swing.JTable();
+        btnTelaInicial = new javax.swing.JButton();
+        btnLimparCampos = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        txtPesquisar = new javax.swing.JTextField();
+        btnPesquisar = new javax.swing.JButton();
+        btnExcluir = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel1.setBackground(new java.awt.Color(255, 255, 204));
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel1.setText("Kits de serviço oferecidos");
+
+        jLabel2.setText("Selecione o Serviço:");
+
+        cbServicos.addItemListener(this::cbServicosItemStateChanged);
+        cbServicos.addActionListener(this::cbServicosActionPerformed);
+
+        jLabel3.setText("Selecione o Produto para o Kit:");
+
+        jLabel4.setText("Quantidade Utilizada:");
+
+        btnAdicionar.setText("ADICIONAR");
+        btnAdicionar.addActionListener(this::btnAdicionarActionPerformed);
 
         tblItensKit.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -50,25 +86,27 @@ public class CadastroKitServico extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane2.setViewportView(tblItensKit);
+        jScrollPane1.setViewportView(tblItensKit);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        btnTelaInicial.setText("TELA INICIAL");
+        btnTelaInicial.addActionListener(this::btnTelaInicialActionPerformed);
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 204));
+        btnLimparCampos.setText("Limpar");
+        btnLimparCampos.addActionListener(this::btnLimparCamposActionPerformed);
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel1.setText("Kits de serviço oferecidos");
+        jLabel6.setText("Pesquisar:");
 
-        jLabel2.setText("Selecione o Serviço:");
+        txtPesquisar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtPesquisarKeyReleased(evt);
+            }
+        });
 
-        cbServicos.addItemListener(this::cbServicosItemStateChanged);
+        btnPesquisar.setText("Pesquisar");
+        btnPesquisar.addActionListener(this::btnPesquisarActionPerformed);
 
-        jLabel3.setText("Selecione o Produto para o Kit:");
-
-        jLabel4.setText("Quantidade Utilizada:");
-
-        btnAdicionar.setText("ADICIONAR");
-        btnAdicionar.addActionListener(this::btnAdicionarActionPerformed);
+        btnExcluir.setText("Desabilitar o kit");
+        btnExcluir.addActionListener(this::btnExcluirActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -77,11 +115,19 @@ public class CadastroKitServico extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(74, 74, 74)
-                        .addComponent(jLabel1))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnTelaInicial))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel6)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnPesquisar)
+                        .addGap(90, 90, 90))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(28, 28, 28)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel3)
                                 .addGap(18, 18, 18)
@@ -91,22 +137,33 @@ public class CadastroKitServico extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(cbServicos, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(38, 38, 38)
-                                .addComponent(btnAdicionar))))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel4)
+                                    .addComponent(btnAdicionar))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(18, 18, 18)
+                                        .addComponent(txtQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(btnLimparCampos)))))
+                        .addGap(35, 35, 35)
+                        .addComponent(btnExcluir))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 411, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(35, Short.MAX_VALUE))
+                        .addGap(15, 15, 15)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 594, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(20, 20, 20)
-                .addComponent(jLabel1)
-                .addGap(48, 48, 48)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(btnTelaInicial))
+                .addGap(46, 46, 46)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
                     .addComponent(cbServicos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -117,18 +174,33 @@ public class CadastroKitServico extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4)
-                    .addComponent(txtQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnAdicionar))
+                    .addComponent(txtQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(19, 19, 19)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnAdicionar)
+                            .addComponent(btnExcluir)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(btnLimparCampos)))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnPesquisar)
+                    .addComponent(jLabel6)
+                    .addComponent(txtPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(26, 26, 26))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -155,19 +227,26 @@ public class CadastroKitServico extends javax.swing.JFrame {
                 return;
             }
 
-            // 2. CAPTURA: Faz o 'cast' (conversão) dos itens do ComboBox de volta para os seus Modelos
-            Servico servicoSelecionado = (Servico) cbServicos.getSelectedItem();
-            Produto produtoSelecionado = (Produto) cbProdutos.getSelectedItem();
+            // 2. CAPTURA SEGURA: Pega os IDs usando métodos que sabem ler o texto do ComboBox
+            int idServico = obterIdServicoSelecionado();
 
-            // Pega os IDs reais do banco de dados através dos objetos salvos
-            int idServico = servicoSelecionado.getIdServico();
-            int idProduto = produtoSelecionado.getIdProduto();
+            // Pega o ID do Produto que vem antes do hífen
+            String textoProduto = cbProdutos.getSelectedItem().toString();
+            int idProduto = -1;
+            String nomeProduto = textoProduto;
+
+            if (textoProduto.contains("-")) {
+                idProduto = Integer.parseInt(textoProduto.split("-")[0].trim());
+                nomeProduto = textoProduto.split("-")[1].trim(); // Pega o nome real para a mensagem
+            } else {
+                idProduto = Integer.parseInt(textoProduto.trim());
+            }
 
             // Lê a quantidade inserida na caixa de texto
             int quantidade = Integer.parseInt(txtQuantidade.getText().trim());
 
-            if (quantidade <= 0) {
-                javax.swing.JOptionPane.showMessageDialog(this, "A quantidade deve ser maior do que zero!");
+            if (idServico == -1 || idProduto == -1 || quantidade <= 0) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Por favor, selecione opções válidas e uma quantidade maior que zero!");
                 return;
             }
 
@@ -182,17 +261,27 @@ public class CadastroKitServico extends javax.swing.JFrame {
             dao.Adicionar(novoKitItem);
 
             // 5. SUCESSO: Avisa ao usuário e limpa o campo de quantidade
-            javax.swing.JOptionPane.showMessageDialog(this, "Produto '" + produtoSelecionado.getNomeProduto() + "' adicionado ao kit com sucesso!");
+            javax.swing.JOptionPane.showMessageDialog(this, "Produto '" + nomeProduto + "' adicionado ao kit com sucesso!");
 
-            // Limpa a quantidade para a próxima inserção
+            // Limpa a quantidade para a próxima inserção e atualiza a tabela da tela
             txtQuantidade.setText("");
+            
+            if (txtPesquisar != null) {
+            txtPesquisar.setText("");
+        }
+        if (sorter != null) {
+            sorter.setRowFilter(null);
+        }
+
+            // CORREÇÃO: Chama o método correto com o nome novo que a IDE exige!
             atualizarTabelaItensKit();
-            // Opcional: Se tiver uma tabela visual embaixo, chame o método de atualizar a tabela aqui!
+
         } catch (NumberFormatException e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Erro: A quantidade inserida é inválida! Use apenas números inteiros.");
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Erro ao adicionar produto ao kit: " + e.getMessage());
         }
+
 
     }//GEN-LAST:event_btnAdicionarActionPerformed
 
@@ -204,45 +293,269 @@ public class CadastroKitServico extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_cbServicosItemStateChanged
-    private void atualizarTabelaItensKit() {
-        // 1. Verifica se existe algum serviço selecionado no ComboBox
-        if (cbServicos.getSelectedItem() == null) {
+
+    private void btnTelaInicialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTelaInicialActionPerformed
+
+        this.dispose();
+    }//GEN-LAST:event_btnTelaInicialActionPerformed
+
+    private void btnLimparCamposActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparCamposActionPerformed
+
+        // 1. Reseta os ComboBoxes para a primeira opção (geralmente o "Selecione...")
+        if (cbServicos != null && cbServicos.getItemCount() > 0) {
+            cbServicos.setSelectedIndex(0);
+        }
+        if (cbProdutos != null && cbProdutos.getItemCount() > 0) {
+            cbProdutos.setSelectedIndex(0);
+        }
+
+        // 2. Limpa o campo de quantidade
+        if (txtQuantidade != null) {
+            txtQuantidade.setText("");
+        }
+
+        // 3. Limpa o campo de pesquisa e remove qualquer filtro ativo na tabela
+        if (txtPesquisar != null) {
+            txtPesquisar.setText("");
+        }
+        if (sorter != null) {
+            sorter.setRowFilter(null);
+        }
+
+        // 4. Coloca o foco do teclado de volta no primeiro ComboBox
+        if (cbServicos != null) {
+            cbServicos.requestFocus();
+        }
+
+
+    }//GEN-LAST:event_btnLimparCamposActionPerformed
+
+    private void txtPesquisarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPesquisarKeyReleased
+
+        String texto = txtPesquisar.getText().trim();
+
+        if (sorter == null) {
             return;
         }
 
-        // 2. Captura o objeto do serviço selecionado e descobre o ID dele
-        Servico servicoSelecionado = (Servico) cbServicos.getSelectedItem();
-        int idServico = servicoSelecionado.getIdServico();
+        if (texto.isEmpty()) {
+            sorter.setRowFilter(null); // Mostra tudo se tiver vazio
+        } else {
+            // Filtra pelo Nome do Produto (Coluna 1 da tabela) ignorando maiúsculas/minúsculas (?i)
+            sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + texto, 1));
+        }
 
-        // 3. Instancia os DAOs necessários
-        KitServicoDAO kitDAO = new KitServicoDAO();
-        ProdutoDAO produtoDAO = new ProdutoDAO();
+    }//GEN-LAST:event_txtPesquisarKeyReleased
 
-        // 4. Busca no banco de dados a lista de itens vinculados a esse serviço
-        java.util.List<KitServico> listaItens = kitDAO.listarPorServico(idServico);
+    private void btnPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarActionPerformed
+        txtPesquisarKeyReleased(null);
+    }//GEN-LAST:event_btnPesquisarActionPerformed
 
-        // 5. Pega o modelo da tabela da tela e limpa as linhas antigas
+    private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
+
+        // 1. Verifica se o usuário selecionou uma linha na tabela
+        int linhaSelecionada = tblItensKit.getSelectedRow();
+
+        if (linhaSelecionada == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, selecione um produto na tabela para remover do kit.");
+            return;
+        }
+
+        // Converte o índice para o modelo (essencial por causa da pesquisa em tempo real)
+        int linhaModelo = tblItensKit.convertRowIndexToModel(linhaSelecionada);
+
+        // 2. CAPTURA DIRETO DA LINHA DA JTABLE USANDO AS COLUNAS CORRETAS: ✨
+        int idServico = (int) tblItensKit.getModel().getValueAt(linhaModelo, 0); // Coluna 0 é o ID do Serviço
+        String nomeServico = tblItensKit.getModel().getValueAt(linhaModelo, 1).toString();
+        // Captura o ID do Produto convertendo para String primeiro e depois para Inteiro de forma segura! ✨
+        String valorColunaProduto = tblItensKit.getModel().getValueAt(linhaModelo, 2).toString();
+        int idProduto = Integer.parseInt(valorColunaProduto);
+
+        String nomeProduto = tblItensKit.getModel().getValueAt(linhaModelo, 3).toString();
+
+        // 3. Pede confirmação
+        int confirmar = javax.swing.JOptionPane.showConfirmDialog(this,
+                "Tem certeza que deseja desativar o produto '" + nomeProduto + "' do kit '" + nomeServico + "'?",
+                "Confirmar Remoção", javax.swing.JOptionPane.YES_NO_OPTION);
+
+        if (confirmar == javax.swing.JOptionPane.YES_OPTION) {
+            try {
+                // 4. Instancia o DAO e manda os dois IDs exatos para o UPDATE lógico
+                KitServicoDAO dao = new KitServicoDAO();
+                dao.excluirItemDoKit(idServico, idProduto);
+
+                javax.swing.JOptionPane.showMessageDialog(this, "Produto desativado do kit com sucesso!");
+
+                // 5. Limpa a pesquisa e força a tabela a se redesenhar puxando do MySQL
+                if (txtPesquisar != null) {
+                    txtPesquisar.setText("");
+                }
+                if (sorter != null) {
+                    sorter.setRowFilter(null);
+                }
+
+                atualizarTabelaItensKit(); // Recarrega a tabela (e o inativo vai sumir!)
+
+            } catch (Exception e) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Erro ao remover item do kit: " + e.getMessage());
+            }
+        }
+
+
+    }//GEN-LAST:event_btnExcluirActionPerformed
+
+    private void cbServicosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbServicosActionPerformed
+
+        atualizarTabelaItensKit();
+
+    }//GEN-LAST:event_cbServicosActionPerformed
+
+ private void atualizarTabelaItensKit() {
+    // 1. Criamos os títulos das 5 colunas corretas
+    String[] colunas = {"ID Serviço", "Nome do Kit / Serviço", "ID Prod", "Produto Utilizado", "Qtd Gasta"};
+    
+    // 2. Criamos um modelo NOVO do zero com as colunas
+    javax.swing.table.DefaultTableModel modeloDefault = new javax.swing.table.DefaultTableModel(colunas, 0);
+    
+    // 3. Força a JTable a recriar toda a sua estrutura a partir do código
+    tblItensKit.setAutoCreateColumnsFromModel(true);
+    tblItensKit.setModel(modeloDefault);
+
+    try {
+        // 4. Instancia o DAO e busca os dados do banco
+        KitServicoDAO dao = new KitServicoDAO();
+        java.util.List<KitServico> lista = dao.listarPorServico(0); 
+
+        // 5. Preenche a tabela linha por linha
+        for (KitServico ks : lista) {
+            Object[] row = {
+                ks.getServicoId(),   // Coluna 0
+                ks.getNomeServico(), // Coluna 1
+                ks.getProdutoId(),   // Coluna 2
+                ks.getNomeProduto(),  // Coluna 3
+                ks.getQtidadeProdutoPorServico() // Coluna 4
+            };
+            modeloDefault.addRow(row);
+        }
+        
+        // 6. Configura o filtro de pesquisa em tempo real
+        sorter = new javax.swing.table.TableRowSorter<>(modeloDefault);
+        tblItensKit.setRowSorter(sorter);
+        
+        // 7. SOLUÇÃO DEFINITIVA: Oculta as colunas removendo a largura delas de forma segura! 🙈
+        // Se a JTable já tiver as colunas criadas, ajustamos o tamanho diretamente na estrutura visual
+        if (tblItensKit.getColumnModel().getColumnCount() >= 5) {
+            // Esconde a Coluna 0 (ID Serviço)
+            tblItensKit.getColumnModel().getColumn(0).setMinWidth(0);
+            tblItensKit.getColumnModel().getColumn(0).setMaxWidth(0);
+            tblItensKit.getColumnModel().getColumn(0).setPreferredWidth(0);
+
+            // Esconde a Coluna 2 (ID Prod)
+            tblItensKit.getColumnModel().getColumn(2).setMinWidth(0);
+            tblItensKit.getColumnModel().getColumn(2).setMaxWidth(0);
+            tblItensKit.getColumnModel().getColumn(2).setPreferredWidth(0);
+        }
+        
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Erro ao carregar tabela de itens: " + e.getMessage());
+    }
+}
+
+
+
+    private int obterIdServicoSelecionado() {
+    if (cbServicos == null || cbServicos.getSelectedItem() == null) {
+        return -1;
+    }
+    
+    String item = cbServicos.getSelectedItem().toString();
+    
+    // SE USUÁRIO DEIXOU EM "SELECIONE", RETORNA -1 E PROTEGE O SISTEMA! 🛡️
+    if (item.startsWith("Selecione")) {
+        return -1;
+    }
+    
+    if (cbServicos.getSelectedItem() instanceof model.Servico) {
+        model.Servico s = (model.Servico) cbServicos.getSelectedItem();
+        return s.getIdServico();
+    }
+    
+    try {
+        if (item.contains("-")) {
+            return Integer.parseInt(item.split("-")[0].trim());
+        }
+        return Integer.parseInt(item.trim());
+    } catch (Exception e) {
+        return -1; 
+    }
+}
+
+
+    private void mostrarTodosOsKitsNaTabela() {
         javax.swing.table.DefaultTableModel modeloDefault = (javax.swing.table.DefaultTableModel) tblItensKit.getModel();
+
+        // Mudamos os títulos para fazer sentido ver tudo junto
+        String[] colunas = {"ID Prod", "Produto Utilizado", "Qtd Gasta"};
+        modeloDefault.setColumnIdentifiers(colunas);
         modeloDefault.setRowCount(0);
 
-        // 6. Percorre os itens encontrados no banco
-        for (KitServico item : listaItens) {
-            // Como o KitServico só guarda o ID do produto, precisamos descobrir o nome dele
-            // Vamos buscar a lista completa de produtos para achar o correspondente
-            String nomeProduto = "Produto não encontrado";
-            for (Produto prod : produtoDAO.listarTodos()) {
-                if (prod.getIdProduto() == item.getProdutoId()) {
-                    nomeProduto = prod.getNomeProduto();
-                    break;
-                }
+        try {
+            KitServicoDAO dao = new KitServicoDAO();
+            // Chama o novo método que traz tudo do SQL!
+            java.util.List<KitServico> lista = dao.listarTodosOsKits();
+
+            for (KitServico ks : lista) {
+                Object[] linha = {
+                    ks.getProdutoId(),
+                    ks.getNomeProduto(),
+                    ks.getQtidadeProdutoPorServico()
+                };
+                modeloDefault.addRow(linha);
             }
 
-            // Monta a linha com o Nome do Produto e a Quantidade cadastrada no kit
-            Object[] linha = {
-                nomeProduto,
-                item.getQtidadeProdutoPorServico()
-            };
-            modeloDefault.addRow(linha);
+            sorter = new javax.swing.table.TableRowSorter<>(modeloDefault);
+            tblItensKit.setRowSorter(sorter);
+
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao carregar listagem completa: " + e.getMessage());
+        }
+    }
+
+    private void carregarServicosDoBanco() {
+        try {
+             cbServicos.removeAllItems();
+        
+        // 1. ADICIONA A OPÇÃO PADRÃO COMO PRIMEIRO ITEM ✨
+        cbServicos.addItem("Selecione um serviço...");
+            // Instancia o seu DAO de Serviços
+            model.ServicoDAO sDao = new model.ServicoDAO();
+            java.util.List<model.Servico> lista = sDao.listarTodos(); // Se o seu método no DAO for 'Listar()', ajuste aqui
+
+            for (model.Servico s : lista) {
+                // Monta a String "ID - Nome" dinamicamente com os dados do MySQL
+                cbServicos.addItem(s.getIdServico() + " - " + s.getServico());
+            }
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao carregar serviços no menu: " + e.getMessage());
+        }
+    }
+
+    private void carregarProdutosDoBanco() {
+        try {
+            cbProdutos.removeAllItems();
+        
+        // 2. ADICIONA A OPÇÃO PADRÃO COMO PRIMEIRO ITEM ✨
+        cbProdutos.addItem("Selecione um produto...");
+            // Instancia o seu DAO de Produtos
+            model.ProdutoDAO pDao = new model.ProdutoDAO();
+            java.util.List<model.Produto> lista = pDao.listarTodos(); // Se o seu método no DAO de produtos for diferente, ajuste aqui
+
+            for (model.Produto p : lista) {
+                // Monta a String "ID - NomeProduto" com os dados do MySQL
+                cbProdutos.addItem(p.getIdProduto() + " - " + p.getNomeProduto());
+            }
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao carregar produtos no menu: " + e.getMessage());
         }
     }
 
@@ -268,21 +581,27 @@ public class CadastroKitServico extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new CadastroKitServico().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new CadastroKitServico(null).setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdicionar;
+    private javax.swing.JButton btnExcluir;
+    private javax.swing.JButton btnLimparCampos;
+    private javax.swing.JButton btnPesquisar;
+    private javax.swing.JButton btnTelaInicial;
     private javax.swing.JComboBox<String> cbProdutos;
     private javax.swing.JComboBox<String> cbServicos;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable tblItensKit;
+    private javax.swing.JTextField txtPesquisar;
     private javax.swing.JTextField txtQuantidade;
     // End of variables declaration//GEN-END:variables
 }

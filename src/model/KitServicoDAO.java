@@ -37,62 +37,115 @@ public class KitServicoDAO {
         }
     }
 
-    // 2. MÉTODO PARA LISTAR OS PRODUTOS DE UM SERVIÇO ESPECÍFICO (Para carregar no JTable)
-    public List<KitServico> listarPorServico(int idServicoBusca) {
-        String sql = "SELECT * FROM kitservico WHERE servico_id = ?";
-        List<KitServico> lista = new ArrayList<>();
-        ConexaoJDBC conexaoJDBC = new ConexaoJDBC();
+    // 2. MÉTODO PARA LISTAR TODOS OS KITS CADASTRADOS (Sem apagar o anterior!)
+public List<KitServico> listarPorServico(int idServicoBusca) {
+    // Buscamos apenas os registros ativos! ✨
+    String sql = "SELECT ks.servico_id, s.servico AS nome_servico, ks.produto_id, p.nomeProduto, ks.qtidadeProdutoPorServico " +
+                 "FROM kitservico ks " +
+                 "INNER JOIN servico s ON ks.servico_id = s.idServico " +
+                 "INNER JOIN produto p ON ks.produto_id = p.idProduto " +
+                 "WHERE ks.ativo = TRUE"; // Filtra os desativados!
+                 
+    List<KitServico> lista = new ArrayList<>();
+    ConexaoJDBC conexaoJDBC = new ConexaoJDBC();
 
-        try {
-            conexaoJDBC.conectar();
-            Connection conn = conexaoJDBC.getConexao();
+    try {
+        conexaoJDBC.conectar();
+        Connection conn = conexaoJDBC.getConexao();
 
-            if (conn != null) {
-                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                    stmt.setInt(1, idServicoBusca);
-                    
-                    try (ResultSet rs = stmt.executeQuery()) {
-                        while (rs.next()) {
-                            KitServico kit = new KitServico();
-                            kit.setServicoId(rs.getInt("servico_id"));
-                            kit.setProdutoId(rs.getInt("produto_id"));
-                            kit.setQtidadeProdutoPorServico(rs.getInt("qtidadeProdutoPorServico"));
+        if (conn != null) {
+            try (PreparedStatement stmt = conn.prepareStatement(sql);
+                 ResultSet rs = stmt.executeQuery()) {
+                 
+                while (rs.next()) {
+                    KitServico kit = new KitServico();
+                    kit.setServicoId(rs.getInt("servico_id"));
+                    kit.setProdutoId(rs.getInt("produto_id"));
+                    kit.setQtidadeProdutoPorServico(rs.getInt("qtidadeProdutoPorServico"));
+                    kit.setNomeProduto(rs.getString("nomeProduto")); 
+                    kit.setNomeServico(rs.getString("nome_servico")); // Captura o nome do Kit/Serviço! 🌟
 
-                            lista.add(kit);
-                        }
-                    }
+                    lista.add(kit);
                 }
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao listar itens do kit do banco: " + e.getMessage(), e);
-        } finally {
-            conexaoJDBC.desconectar();
         }
-        return lista;
+    } catch (SQLException e) {
+        throw new RuntimeException("Erro ao listar kits do banco: " + e.getMessage(), e);
+    } finally {
+        conexaoJDBC.desconectar();
     }
+    return lista;
+}
+
+
+
 
     // 3. MÉTODO PARA REMOVER UM PRODUTO ESPECÍFICO DE UM KIT (Exclusão pela chave composta)
-    public void excluirItemDoKit(int idServico, int idProduto) {
-        String sql = "DELETE FROM kitservico WHERE servico_id = ? AND produto_id = ?";
-        ConexaoJDBC conexaoJDBC = new ConexaoJDBC();
+public void excluirItemDoKit(int idServico, int idProduto) {
+    // Mudamos de DELETE para UPDATE! Não apaga, apenas desativa. 🔒
+    String sql = "UPDATE kitservico SET ativo = FALSE WHERE servico_id = ? AND produto_id = ?";
+    ConexaoJDBC conexaoJDBC = new ConexaoJDBC();
 
-        try {
-            conexaoJDBC.conectar();
-            Connection conn = conexaoJDBC.getConexao();
+    try {
+        conexaoJDBC.conectar();
+        Connection conn = conexaoJDBC.getConexao();
 
-            if (conn != null) {
-                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                    stmt.setInt(1, idServico);
-                    stmt.setInt(2, idProduto);
-                    
-                    stmt.executeUpdate();
-                    System.out.println("Item removido do kit com sucesso!");
+        if (conn != null) {
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, idServico);
+                stmt.setInt(2, idProduto);
+                
+                stmt.executeUpdate(); 
+                System.out.println("Item desativado do kit com sucesso!");
+            }
+        }
+    } catch (SQLException e) {
+        throw new RuntimeException("Erro ao desativar item do kit no banco: " + e.getMessage(), e);
+    } finally {
+        conexaoJDBC.desconectar();
+    }
+}
+
+
+    // 4. NOVO MÉTODO: Lista TODOS os kits cadastrados no banco de uma só vez (Para a listagem pronta)
+public List<KitServico> listarTodosOsKits() {
+    // Adicionado o filtro de ativos no final! ✨
+    String sql = "SELECT ks.servico_id, s.servico AS nome_servico, ks.produto_id, p.nomeProduto, ks.qtidadeProdutoPorServico " +
+                 "FROM kitservico ks " +
+                 "INNER JOIN servico s ON ks.servico_id = s.idServico " +
+                 "INNER JOIN produto p ON ks.produto_id = p.idProduto " +
+                 "WHERE ks.ativo = TRUE"; 
+                 
+    List<KitServico> lista = new ArrayList<>();
+    ConexaoJDBC conexaoJDBC = new ConexaoJDBC();
+
+    try {
+        conexaoJDBC.conectar();
+        Connection conn = conexaoJDBC.getConexao();
+
+        if (conn != null) {
+            try (PreparedStatement stmt = conn.prepareStatement(sql);
+                 ResultSet rs = stmt.executeQuery()) {
+                 
+                while (rs.next()) {
+                    KitServico kit = new KitServico();
+                    kit.setServicoId(rs.getInt("servico_id"));
+                    kit.setProdutoId(rs.getInt("produto_id"));
+                    kit.setQtidadeProdutoPorServico(rs.getInt("qtidadeProdutoPorServico"));
+                    kit.setNomeProduto(rs.getString("nomeProduto"));
+                    kit.setNomeServico(rs.getString("nome_servico")); // Descomentado e ativo! 🌟
+
+                    lista.add(kit);
                 }
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao remover item do kit no banco: " + e.getMessage(), e);
-        } finally {
-            conexaoJDBC.desconectar();
         }
+    } catch (SQLException e) {
+        throw new RuntimeException("Erro ao listar todos os kits: " + e.getMessage(), e);
+    } finally {
+        conexaoJDBC.desconectar();
     }
+    return lista;
+}
+
+
 }
