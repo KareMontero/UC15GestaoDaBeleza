@@ -10,11 +10,10 @@ import java.util.List;
 
 public class ProdutoDAO {
 
-    // 1. MÉTODO PARA INSERIR NO BANCO
     public void Adicionar(Produto prod) {
-        // SQL com as colunas exatas da sua tabela produto
+
         String sql = "INSERT INTO produto (nomeProduto, descricao, precoVenda, estoqueAtual, ativo, fk_fornecedor) "
-                   + "VALUES (?, ?, ?, ?, ?, ?)";
+                + "VALUES (?, ?, ?, ?, ?, ?)";
 
         ConexaoJDBC conexaoJDBC = new ConexaoJDBC();
 
@@ -30,7 +29,6 @@ public class ProdutoDAO {
                     stmt.setInt(4, prod.getEstoqueAtual());
                     stmt.setBoolean(5, prod.isAtivo());
 
-                    // Se não tiver fornecedor vinculado (ID for 0), grava NULL no banco
                     if (prod.getFkFornecedor() == 0) {
                         stmt.setNull(6, java.sql.Types.INTEGER);
                     } else {
@@ -48,7 +46,6 @@ public class ProdutoDAO {
         }
     }
 
-    // 2. MÉTODO PARA LISTAR TODOS DO BANCO
     public List<Produto> listarTodos() {
         String sql = "SELECT * FROM produto ORDER BY nomeProduto";
         List<Produto> lista = new ArrayList<>();
@@ -59,8 +56,7 @@ public class ProdutoDAO {
             Connection conn = conexaoJDBC.getConexao();
 
             if (conn != null) {
-                try (PreparedStatement stmt = conn.prepareStatement(sql);
-                     ResultSet rs = stmt.executeQuery()) {
+                try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
                     while (rs.next()) {
                         Produto p = new Produto();
@@ -84,7 +80,6 @@ public class ProdutoDAO {
         return lista;
     }
 
-    // 3. MÉTODO PARA EXCLUIR POR ID DO BANCO (e não por índice da lista)
     public void excluir(int idProduto) {
         String sql = "DELETE FROM produto WHERE idProduto = ?";
         ConexaoJDBC conexaoJDBC = new ConexaoJDBC();
@@ -106,11 +101,10 @@ public class ProdutoDAO {
             conexaoJDBC.desconectar();
         }
     }
-    
-        // 4. MÉTODO PARA ATUALIZAR UM PRODUTO JÁ EXISTENTE
+
     public void atualizar(Produto prod) {
         String sql = "UPDATE produto SET nomeProduto = ?, descricao = ?, precoVenda = ?, "
-                   + "estoqueAtual = ?, ativo = ?, fk_fornecedor = ? WHERE idProduto = ?";
+                + "estoqueAtual = ?, ativo = ?, fk_fornecedor = ? WHERE idProduto = ?";
         ConexaoJDBC conexaoJDBC = new ConexaoJDBC();
 
         try {
@@ -124,13 +118,13 @@ public class ProdutoDAO {
                     stmt.setDouble(3, prod.getPrecoVenda());
                     stmt.setInt(4, prod.getEstoqueAtual());
                     stmt.setBoolean(5, prod.isAtivo());
-                    
+
                     if (prod.getFkFornecedor() == 0) {
                         stmt.setNull(6, java.sql.Types.INTEGER);
                     } else {
                         stmt.setInt(6, prod.getFkFornecedor());
                     }
-                    
+
                     stmt.setInt(7, prod.getIdProduto());
 
                     stmt.executeUpdate();
@@ -144,7 +138,6 @@ public class ProdutoDAO {
         }
     }
 
-    // 5. MÉTODO PARA PESQUISAR PRODUTOS PELO NOME (Para a barra de pesquisa)
     public List<Produto> pesquisarPorNome(String nomeBusca) {
         String sql = "SELECT * FROM produto WHERE nomeProduto LIKE ? ORDER BY nomeProduto";
         List<Produto> lista = new ArrayList<>();
@@ -158,7 +151,7 @@ public class ProdutoDAO {
                 try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                     // O "%" faz a busca encontrar qualquer parte do texto digitado
                     stmt.setString(1, "%" + nomeBusca + "%");
-                    
+
                     try (ResultSet rs = stmt.executeQuery()) {
                         while (rs.next()) {
                             Produto p = new Produto();

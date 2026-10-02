@@ -14,33 +14,27 @@ import java.util.List;
  */
 public class FornecedorDAO {
 
-    // 1. ATUALIZADO: Agora recebe o Fornecedor E a lista de objetos Telefone acumulados na tela
     public void Adicionar(Fornecedor forn, List<Telefone> listaTelefones) {
-        
-        // SQL alinhado com a sua nova tabela fornecedor (usando fk_endereco)
-        String sqlFornecedor = "INSERT INTO fornecedor (razaoSocial, cnpj, pessoaDeContato, emailFornecedor, "
-                   + "ativo, observacao, fk_endereco) VALUES (?, ?, ?, ?, ?, ?, ?)"; 
 
-        // SQL do telefone apontando para fk_fornecedor
+        String sqlFornecedor = "INSERT INTO fornecedor (razaoSocial, cnpj, pessoaDeContato, emailFornecedor, "
+                + "ativo, observacao, fk_endereco) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
         String sqlTelefone = "INSERT INTO telefone (telefoneTipo, ddd, telefone, fk_fornecedor) VALUES (?, ?, ?, ?)";
 
         ConexaoJDBC conexaoJDBC = new ConexaoJDBC();
-        
+
         try {
             conexaoJDBC.conectar();
             Connection conn = conexaoJDBC.getConexao();
-            
+
             if (conn != null) {
-                // Ativa a transação segura para salvar tudo ou nada
-                conn.setAutoCommit(false); 
-                
+
+                conn.setAutoCommit(false);
+
                 int idFornecedorGerado = 0;
 
-                // ==========================================
-                // PASSO 1: INSERIR O FORNECEDOR
-                // ==========================================
                 try (PreparedStatement stmt = conn.prepareStatement(sqlFornecedor, Statement.RETURN_GENERATED_KEYS)) {
-                    
+
                     stmt.setString(1, forn.getRazaoSocial());
                     stmt.setString(2, forn.getCnpj());
                     stmt.setString(3, forn.getPessoaDeContato());
@@ -48,16 +42,14 @@ public class FornecedorDAO {
                     stmt.setBoolean(5, forn.isAtivo());
                     stmt.setString(6, forn.getObservacao());
 
-                    // Validação do endereço opcional do fornecedor
                     if (forn.getFkEndereco() == 0) {
                         stmt.setNull(7, java.sql.Types.INTEGER);
                     } else {
-                        stmt.setInt(7, forn.getFkEndereco()); 
+                        stmt.setInt(7, forn.getFkEndereco());
                     }
 
                     stmt.executeUpdate();
-                    
-                    // Descobre o ID que o banco gerou para este fornecedor
+
                     try (ResultSet rs = stmt.getGeneratedKeys()) {
                         if (rs.next()) {
                             idFornecedorGerado = rs.getInt(1);
@@ -65,31 +57,27 @@ public class FornecedorDAO {
                     }
                 }
 
-                // ==========================================
-                // PASSO 2: INSERIR OS TELEFONES DO FORNECEDOR
-                // ==========================================
                 if (listaTelefones != null && !listaTelefones.isEmpty()) {
                     try (PreparedStatement stmtTel = conn.prepareStatement(sqlTelefone)) {
-                        
+
                         for (Telefone tel : listaTelefones) {
-                            stmtTel.setString(1, tel.getTelefoneTipo()); // 'celular', 'casa' ou 'trabalho'
-                            stmtTel.setString(2, tel.getDdd());          
-                            stmtTel.setString(3, tel.getTelefone());     
-                            stmtTel.setInt(4, idFornecedorGerado); // Vincula o número ao fornecedor criado
-                            
-                            stmtTel.addBatch(); // Adiciona ao lote
+                            stmtTel.setString(1, tel.getTelefoneTipo());
+                            stmtTel.setString(2, tel.getDdd());
+                            stmtTel.setString(3, tel.getTelefone());
+                            stmtTel.setInt(4, idFornecedorGerado);
+
+                            stmtTel.addBatch();
                         }
-                        
-                        stmtTel.executeBatch(); // Salva todos os telefones de uma vez
+
+                        stmtTel.executeBatch();
                     }
                 }
- 
-                // Confirma todas as operações com sucesso no MySQL
+
                 conn.commit();
                 System.out.println("Fornecedor e telefone(s) cadastrados com sucesso!");
             }
         } catch (SQLException e) {
-            // Se der erro no meio do caminho, desfaz os inserts para manter o banco limpo
+
             try {
                 if (conexaoJDBC.getConexao() != null) {
                     conexaoJDBC.getConexao().rollback();
@@ -102,21 +90,21 @@ public class FornecedorDAO {
             conexaoJDBC.desconectar();
         }
     }
-    
-        public List<Fornecedor> listarTodos() {
-        // SQL OTIMIZADO: Seleciona todos os fornecedores cadastrados
+
+    public List<Fornecedor> listarTodos() {
+
         String sql = "SELECT * FROM fornecedor ORDER BY razaoSocial";
         List<Fornecedor> lista = new java.util.ArrayList<>();
         ConexaoJDBC conexaoJDBC = new ConexaoJDBC();
-        
+
         try {
             conexaoJDBC.conectar();
             Connection conn = conexaoJDBC.getConexao();
-            
+
             if (conn != null) {
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 ResultSet rs = stmt.executeQuery();
-                
+
                 while (rs.next()) {
                     Fornecedor f = new Fornecedor();
                     f.setIdFornecedor(rs.getInt("idFornecedor"));
@@ -128,7 +116,7 @@ public class FornecedorDAO {
                     f.setObservacao(rs.getString("observacao"));
                     f.setDataCadastro(rs.getTimestamp("dataCadastro"));
                     f.setFkEndereco(rs.getInt("fk_endereco"));
-                    
+
                     lista.add(f);
                 }
                 rs.close();
@@ -141,16 +129,15 @@ public class FornecedorDAO {
         }
         return lista;
     }
-        
-            // ADICIONE ESTE MÉTODO DENTRO DE FornecedorDAO.java
+
     public void excluir(int idFornecedor) {
         String sql = "DELETE FROM fornecedor WHERE idFornecedor = ?";
         ConexaoJDBC conexaoJDBC = new ConexaoJDBC();
-        
+
         try {
             conexaoJDBC.conectar();
             Connection conn = conexaoJDBC.getConexao();
-            
+
             if (conn != null) {
                 try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                     stmt.setInt(1, idFornecedor);
@@ -164,6 +151,5 @@ public class FornecedorDAO {
             conexaoJDBC.desconectar();
         }
     }
-
 
 }

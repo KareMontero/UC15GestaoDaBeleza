@@ -69,5 +69,4 @@ public class KitServico {
         this.ativo = ativo;
     }
 
-   
 }

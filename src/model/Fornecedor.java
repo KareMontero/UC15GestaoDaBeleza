@@ -101,5 +101,4 @@ public class Fornecedor {
         this.fkEndereco = fkEndereco;
     }
 
-   
 }

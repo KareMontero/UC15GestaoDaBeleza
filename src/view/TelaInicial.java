@@ -2,10 +2,6 @@ package view;
 
 import model.Usuario;
 
-/**
- *
- * @author karen
- */
 public class TelaInicial extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaInicial.class.getName());
@@ -30,7 +26,6 @@ public class TelaInicial extends javax.swing.JFrame {
         if (usuarioLogado != null) {
             String perfil = usuarioLogado.getPerfil().toLowerCase();
 
-            // Regra simples: Se NÃO for gerente, bloqueia Funcionários e Relatórios
             if (!perfil.equals("gerente")) {
                 btnCadFunc.setEnabled(false);
                 btnRelatorios.setEnabled(false);
@@ -205,6 +200,7 @@ public class TelaInicial extends javax.swing.JFrame {
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
 
         System.exit(0);
+
     }//GEN-LAST:event_btnSairActionPerformed
 
     private void btnCadClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadClienteActionPerformed
@@ -242,11 +238,16 @@ public class TelaInicial extends javax.swing.JFrame {
 
     private void btnAgendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgendaActionPerformed
 
+        TelaAgenda cadAgenda = new TelaAgenda(this.usuarioLogado);
+        cadAgenda.setLocationRelativeTo(this);
+        cadAgenda.setVisible(true);
 
     }//GEN-LAST:event_btnAgendaActionPerformed
 
     private void btnRelatoriosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRelatoriosActionPerformed
-
+        TelaRelatorio telaRel = new TelaRelatorio(this.usuarioLogado);
+        telaRel.setLocationRelativeTo(this);
+        telaRel.setVisible(true);
 
     }//GEN-LAST:event_btnRelatoriosActionPerformed
 
@@ -259,9 +260,11 @@ public class TelaInicial extends javax.swing.JFrame {
     }//GEN-LAST:event_btnKitServicoActionPerformed
 
     private void btnKitServico1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKitServico1ActionPerformed
-  CadastroKitServico cadKit = new CadastroKitServico(this.usuarioLogado);
+
+        CadastroKitServico cadKit = new CadastroKitServico(this.usuarioLogado);
         cadKit.setLocationRelativeTo(this);
         cadKit.setVisible(true);
+
     }//GEN-LAST:event_btnKitServico1ActionPerformed
 
     /**

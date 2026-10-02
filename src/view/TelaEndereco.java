@@ -176,6 +176,7 @@ public class TelaEndereco extends javax.swing.JDialog {
     }//GEN-LAST:event_txtCidadeActionPerformed
 
     private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
+
         model.Endereco end = new model.Endereco();
         end.setLogradouro(txtLogradouro.getText().trim());
         end.setNumero(txtNumero.getText().trim());
@@ -191,19 +192,13 @@ public class TelaEndereco extends javax.swing.JDialog {
         }
 
         try {
-
             model.EnderecoDAO dao = new model.EnderecoDAO();
-
             this.idEnderecoGerado = dao.adicionar(end);
-
             javax.swing.JOptionPane.showMessageDialog(this, "Endereço salvo com sucesso!");
-
             this.dispose();
-
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Erro ao salvar endereço: " + e.getMessage());
         }
-
     }//GEN-LAST:event_btnSalvarActionPerformed
 
     /**

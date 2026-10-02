@@ -2,17 +2,10 @@ package view;
 
 import javax.swing.JOptionPane;
 
-/**
- *
- * @author karen
- */
 public class TelaValidacaoUsuario extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaValidacaoUsuario.class.getName());
 
-    /**
-     * Creates new form TelaInicialCadastro
-     */
     public TelaValidacaoUsuario() {
         initComponents();
     }
@@ -161,58 +154,50 @@ public class TelaValidacaoUsuario extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnFecharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFecharActionPerformed
-                                            
-    int resposta = JOptionPane.showConfirmDialog(this, "Deseja realmente sair do sistema?", "Confirmar Saída", JOptionPane.YES_NO_OPTION);
-    if (resposta == JOptionPane.YES_OPTION) {
-        System.exit(0); 
-    }
-                                        
 
+        int resposta = JOptionPane.showConfirmDialog(this, "Deseja realmente sair do sistema?", "Confirmar Saída", JOptionPane.YES_NO_OPTION);
+        if (resposta == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }
     }//GEN-LAST:event_btnFecharActionPerformed
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
-                                             
-    String login = txtUsuario.getText().trim();
-    
-    // CORREÇÃO: Captura a senha de forma segura do JPasswordField e converte para String
-    String senha = new String(txtSenha.getPassword()).trim(); 
 
-    if (login.isEmpty() || senha.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Por favor, preencha o Usuário e a Senha!", "Aviso", JOptionPane.WARNING_MESSAGE);
-        txtUsuario.requestFocus();
-        return;
-    }
+        String login = txtUsuario.getText().trim();
+        String senha = new String(txtSenha.getPassword()).trim();
 
-    try {
-        model.UsuarioDAO dao = new model.UsuarioDAO();
-        model.Usuario userConectado = dao.autenticar(login, senha);
-
-        if (userConectado != null) {
-            JOptionPane.showMessageDialog(this, "Bem-vindo(a), " + userConectado.getLogin() + "!\nAcesso liberado como: " + userConectado.getPerfil(), "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-            
-            TelaInicial inicial = new TelaInicial(userConectado);
-            inicial.setVisible(true);
-            
-            this.dispose(); 
-            
-        } else {
-            JOptionPane.showMessageDialog(this, "Usuário ou senha incorretos (ou cadastro inativo)!", "Erro de Acesso", JOptionPane.ERROR_MESSAGE);
+        if (login.isEmpty() || senha.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, preencha o Usuário e a Senha!", "Aviso", JOptionPane.WARNING_MESSAGE);
+            txtUsuario.requestFocus();
+            return;
         }
-        
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Erro ao conectar com o banco de dados:\n" + e.getMessage(), "Erro Crítico", JOptionPane.ERROR_MESSAGE);
-    }
 
+        try {
+            model.UsuarioDAO dao = new model.UsuarioDAO();
+            model.Usuario userConectado = dao.autenticar(login, senha);
 
+            if (userConectado != null) {
+                JOptionPane.showMessageDialog(this, "Bem-vindo(a), " + userConectado.getLogin() + "!\nAcesso liberado como: " + userConectado.getPerfil(), "Sucesso", JOptionPane.INFORMATION_MESSAGE);
 
+                TelaInicial inicial = new TelaInicial(userConectado);
+                inicial.setVisible(true);
+
+                this.dispose();
+
+            } else {
+                JOptionPane.showMessageDialog(this, "Usuário ou senha incorretos (ou cadastro inativo)!", "Erro de Acesso", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao conectar com o banco de dados:\n" + e.getMessage(), "Erro Crítico", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnEntrarActionPerformed
 
     private void btnlimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnlimparActionPerformed
-      
+
         txtUsuario.setText("");
         txtSenha.setText("");
         txtUsuario.requestFocusInWindow();
-     
 
     }//GEN-LAST:event_btnlimparActionPerformed
 

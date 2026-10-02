@@ -147,19 +147,24 @@ public class ListagemFuncionarios extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnTelaInicialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTelaInicialActionPerformed
+
         TelaInicial telaInicial = new TelaInicial(this.usuarioLogado);
         telaInicial.setLocationRelativeTo(null);
         telaInicial.setVisible(true);
         this.dispose();
+
     }//GEN-LAST:event_btnTelaInicialActionPerformed
 
     private void btnCadastrarFuncActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarFuncActionPerformed
+
         CadastroFuncionario telaCadastro = new CadastroFuncionario(this.usuarioLogado);
         telaCadastro.setVisible(true);
         this.dispose();
+
     }//GEN-LAST:event_btnCadastrarFuncActionPerformed
 
     private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
+
         int linhaSelecionada = tblFuncionarios.getSelectedRow();
 
         if (linhaSelecionada == -1) {
@@ -189,11 +194,15 @@ public class ListagemFuncionarios extends javax.swing.JFrame {
     }//GEN-LAST:event_btnExcluirActionPerformed
 
     private void btnPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarActionPerformed
+
         filtrarTabela();
+
     }//GEN-LAST:event_btnPesquisarActionPerformed
 
     private void txtFuncionarioPesquisarPorNomeKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFuncionarioPesquisarPorNomeKeyReleased
+
         filtrarTabela();
+
     }//GEN-LAST:event_txtFuncionarioPesquisarPorNomeKeyReleased
 
     /**
@@ -259,8 +268,6 @@ public class ListagemFuncionarios extends javax.swing.JFrame {
                 telefonesExibicao,
                 String.format("R$ %.2f", f.getValorDoServico()),
                 statusAtivo
-            // f.getEmail(),
-            // enderecoExibicao
             });
         }
 

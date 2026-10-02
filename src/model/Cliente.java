@@ -15,7 +15,6 @@ public class Cliente {
     private boolean ativo;
     private int fkEndereco;
     private String telefonesFormatados;
-    
 
     public Cliente() {
     }
@@ -113,5 +112,4 @@ public class Cliente {
         this.telefonesFormatados = telefonesFormatados;
     }
 
-   
 }

@@ -344,14 +344,13 @@ public class CadastroCliente extends javax.swing.JFrame {
 
     private void btnAdicionarTelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarTelActionPerformed
 
-        // 1. Validação básica usando as suas variáveis
         if (txtDdd.getText().trim().isEmpty() || txtTelCliente.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Preencha o DDD e o Número do telefone antes de adicionar!", "Aviso", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         try {
-            // 2. Instancia um NOVO objeto Telefone (Essencial para não sobrescrever o anterior)
+
             model.Telefone novoTel = new model.Telefone();
 
             String tipo = cbTipoTel.getSelectedItem().toString().trim().toLowerCase();
@@ -359,13 +358,11 @@ public class CadastroCliente extends javax.swing.JFrame {
             novoTel.setDdd(txtDdd.getText().trim());
             novoTel.setTelefone(txtTelCliente.getText().trim());
 
-            // 3. Garante que a lista da classe foi inicializada e ADICIONA o novo objeto
             if (this.telefonesParaSalvar == null) {
                 this.telefonesParaSalvar = new java.util.ArrayList<>();
             }
-            this.telefonesParaSalvar.add(novoTel); // Adiciona mais um na lista do banco
+            this.telefonesParaSalvar.add(novoTel);
 
-            // 4. Alimenta o seu JList visual (Troque lstTelefones pelo nome correto do seu JList se for diferente)
             javax.swing.DefaultListModel<String> modelList;
             if (listTelefones.getModel() instanceof javax.swing.DefaultListModel) {
                 modelList = (javax.swing.DefaultListModel<String>) listTelefones.getModel();
@@ -374,11 +371,9 @@ public class CadastroCliente extends javax.swing.JFrame {
                 listTelefones.setModel(modelList);
             }
 
-            // Monta a linha de texto para a interface visual
             String linhaVisual = "(" + novoTel.getDdd() + ") " + novoTel.getTelefone() + " [" + novoTel.getTelefoneTipo() + "]";
-            modelList.addElement(linhaVisual); // Adiciona mais um na lista visual
+            modelList.addElement(linhaVisual);
 
-            // 5. Limpa APENAS os campos de texto do telefone para o próximo número
             txtDdd.setText("");
             txtTelCliente.setText("");
             cbTipoTel.setSelectedIndex(0);
@@ -394,13 +389,9 @@ public class CadastroCliente extends javax.swing.JFrame {
 
     private void btnAdicionarEnderecoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarEnderecoActionPerformed
         TelaEndereco telaEnd = new TelaEndereco(this, true);
-
         telaEnd.setLocationRelativeTo(this);
-
         telaEnd.setVisible(true);
-
         this.idEnderecoSelecionado = telaEnd.getIdEnderecoGerado();
-
         if (this.idEnderecoSelecionado > 0) {
             javax.swing.JOptionPane.showMessageDialog(this, "Endereço vinculado! ID: " + this.idEnderecoSelecionado);
         }

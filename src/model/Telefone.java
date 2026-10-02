@@ -1,16 +1,17 @@
 package model;
 
 public class Telefone {
-    
+
     private int idTelefone;
-    private String telefoneTipo; 
+    private String telefoneTipo;
     private String ddd;
-    private String telefone; 
-    private Integer fkFuncionario; 
+    private String telefone;
+    private Integer fkFuncionario;
     private Integer fkCliente;
     private Integer fkFornecedor;
 
-    public Telefone() {}
+    public Telefone() {
+    }
 
     public Telefone(int idTelefone, String telefoneTipo, String ddd, String telefone, Integer fkFuncionario, Integer fkCliente, Integer fkFornecedor) {
         this.idTelefone = idTelefone;
@@ -78,6 +79,4 @@ public class Telefone {
         this.fkFornecedor = fkFornecedor;
     }
 
-    
 }
-

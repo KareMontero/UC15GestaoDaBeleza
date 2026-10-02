@@ -10,32 +10,25 @@ import model.Telefone;
 import model.TelefoneDAO;
 import model.Usuario;
 
-/**
- *
- * @author karen
- */
 public class ListagemFornecedores extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ListagemFornecedores.class.getName());
-    // ADICIONE ESTAS TRÊS LINHAS LOGO NO INÍCIO DA CLASSE:
+
     private Usuario usuarioLogado;
-    private TableRowSorter<DefaultTableModel> sorter; // Resolve o erro da linha 263 e 266
+    private TableRowSorter<DefaultTableModel> sorter;
 
     /**
      * Creates new form ListagemFornecedores
      */
-       // SUBSTITUA o seu construtor por este aqui:
     public ListagemFornecedores(Usuario usuario) {
-        
+
         initComponents();
-             this.usuarioLogado = usuario;
-        // Força os títulos a aparecerem corretamente
+        this.usuarioLogado = usuario;
+
         jScrollPane1.setViewportView(tblFornecedores);
-        
-        // Preenche a tabela visual
+
         preencherTabela();
     }
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -159,57 +152,56 @@ public class ListagemFornecedores extends javax.swing.JFrame {
     }//GEN-LAST:event_txtFornecedorPesquisarActionPerformed
 
     private void btnPesquisarNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarNomeActionPerformed
+
         filtrarTabela();
+
     }//GEN-LAST:event_btnPesquisarNomeActionPerformed
 
     private void btnCadastroFornecedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastroFornecedorActionPerformed
 
         CadastroFornecedor telaCadastro = new CadastroFornecedor(this.usuarioLogado);
         telaCadastro.setVisible(true);
-        this.dispose(); // Fecha a tela de listagem atual
+        this.dispose();
+
     }//GEN-LAST:event_btnCadastroFornecedorActionPerformed
 
     private void btnExcluirFornecedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirFornecedorActionPerformed
-    
-            int linhaSelecionada = tblFornecedores.getSelectedRow();
 
-    if (linhaSelecionada == -1) {
-        JOptionPane.showMessageDialog(this, "Por favor, selecione um fornecedor na tabela para excluir.", "Aviso", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
+        int linhaSelecionada = tblFornecedores.getSelectedRow();
 
-// SUBSTITUA A LINHA DO ERRO POR ESTA VERSÃO CORRIGIDA:
-int confirmacao = JOptionPane.showConfirmDialog(this, "Deseja excluir permanentemente este fornecedor?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
-
-
-    if (confirmacao == JOptionPane.YES_OPTION) {
-        try {
-            // Proteção do índice para quando a tabela estiver filtrada/pesquisada
-            int linhaRealDoModelo = tblFornecedores.convertRowIndexToModel(linhaSelecionada);
-            
-            // 1. Captura o ID do fornecedor na coluna 0 da tabela
-            int idFornecedor = Integer.parseInt(tblFornecedores.getModel().getValueAt(linhaRealDoModelo, 0).toString());
-            
-            // 2. Chama o DAO correto do Fornecedor para executar a exclusão
-            model.FornecedorDAO dao = new model.FornecedorDAO();
-            dao.excluir(idFornecedor);
-
-            JOptionPane.showMessageDialog(this, "Fornecedor excluído com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-            preencherTabela(); // Atualiza a tabela para remover o registro visualmente
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Erro ao excluir fornecedor:\n" + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        if (linhaSelecionada == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecione um fornecedor na tabela para excluir.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-    }
 
-        
+        int confirmacao = JOptionPane.showConfirmDialog(this, "Deseja excluir permanentemente este fornecedor?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
+
+        if (confirmacao == JOptionPane.YES_OPTION) {
+            try {
+
+                int linhaRealDoModelo = tblFornecedores.convertRowIndexToModel(linhaSelecionada);
+
+                int idFornecedor = Integer.parseInt(tblFornecedores.getModel().getValueAt(linhaRealDoModelo, 0).toString());
+
+                model.FornecedorDAO dao = new model.FornecedorDAO();
+                dao.excluir(idFornecedor);
+
+                JOptionPane.showMessageDialog(this, "Fornecedor excluído com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                preencherTabela();
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Erro ao excluir fornecedor:\n" + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }//GEN-LAST:event_btnExcluirFornecedorActionPerformed
 
     private void btnVoltarTelaInicialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarTelaInicialActionPerformed
-             TelaInicial telaInicial = new TelaInicial(this.usuarioLogado);
+
+        TelaInicial telaInicial = new TelaInicial(this.usuarioLogado);
         telaInicial.setLocationRelativeTo(null);
         telaInicial.setVisible(true);
         this.dispose();
+
     }//GEN-LAST:event_btnVoltarTelaInicialActionPerformed
 
     /**
@@ -236,57 +228,53 @@ int confirmacao = JOptionPane.showConfirmDialog(this, "Deseja excluir permanente
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new ListagemFornecedores(null).setVisible(true));
     }
-    
-        private void preencherTabela() {
+
+    private void preencherTabela() {
         javax.swing.table.DefaultTableModel modeloTabela = (javax.swing.table.DefaultTableModel) tblFornecedores.getModel();
-        modeloTabela.setNumRows(0); 
+        modeloTabela.setNumRows(0);
 
         FornecedorDAO dao = new FornecedorDAO();
         List<Fornecedor> lista = dao.listarTodos();
 
-        // Instanciamos o TelefoneDAO para ler os números da empresa no laço
         TelefoneDAO telDAO = new TelefoneDAO();
 
         for (Fornecedor f : lista) {
             String statusAtivo = f.isAtivo() ? "Ativo" : "Inativo";
 
-            // Busca e formata os múltiplos telefones do fornecedor
-            List<Telefone> telefonesDoForn = telDAO.buscarPorFornecedor(f.getIdFornecedor()); 
+            List<Telefone> telefonesDoForn = telDAO.buscarPorFornecedor(f.getIdFornecedor());
             StringBuilder textoTelefones = new StringBuilder();
-            
+
             for (Telefone t : telefonesDoForn) {
                 if (textoTelefones.length() > 0) {
                     textoTelefones.append(" | ");
                 }
                 textoTelefones.append("(").append(t.getDdd()).append(") ").append(t.getTelefone());
             }
-            
+
             String telefonesExibicao = (textoTelefones.length() == 0) ? "Sem telefone" : textoTelefones.toString();
 
-            // Adiciona as colunas na ordem exata configurada no JTable
             modeloTabela.addRow(new Object[]{
-                f.getIdFornecedor(),      // Coluna 0
-                f.getRazaoSocial(),       // Coluna 1
-                f.getCnpj(),              // Coluna 2
-                f.getPessoaDeContato(),   // Coluna 3
-                telefonesExibicao,        // Coluna 4 (Mostra todos os números amarrados)
-                statusAtivo               // Coluna 5
+                f.getIdFornecedor(),
+                f.getRazaoSocial(),
+                f.getCnpj(),
+                f.getPessoaDeContato(),
+                telefonesExibicao,
+                statusAtivo
             });
         }
     }
-        
-            private void filtrarTabela() {
-        // Substitua pelo nome correto da sua caixa de texto de pesquisa se for diferente
+
+    private void filtrarTabela() {
+
         String texto = txtFornecedorPesquisar.getText().trim();
 
         if (texto.isEmpty()) {
-            sorter.setRowFilter(null); // Remove o filtro se o campo estiver vazio
+            sorter.setRowFilter(null);
         } else {
-            // Filtra ignorando maiúsculas e minúsculas (?i) buscando na coluna 1 (Nome)
+
             sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + texto, 1));
         }
     }
-
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

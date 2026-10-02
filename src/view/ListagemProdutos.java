@@ -8,19 +8,12 @@ import java.util.List;
 import model.Produto;
 import model.ProdutoDAO;
 
-/**
- *
- * @author karen
- */
 public class ListagemProdutos extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ListagemProdutos.class.getName());
     private javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter;
     private model.Usuario usuarioLogado;
 
-    /**
-     * Creates new form ListagemProdutos
-     */
     public ListagemProdutos(model.Usuario usuario) {
         this.usuarioLogado = usuario;
         initComponents();
@@ -30,35 +23,29 @@ public class ListagemProdutos extends javax.swing.JFrame {
     }
 
     private void preencherTabela() {
-        DefaultTableModel modeloTabela = (DefaultTableModel) tblProdutos.getModel(); // Pegue o modelo da sua JTable
-        modeloTabela.setNumRows(0); // Limpa as linhas antigas para não duplicar dados
+        DefaultTableModel modeloTabela = (DefaultTableModel) tblProdutos.getModel();
+        modeloTabela.setNumRows(0);
 
-        // Puxa a lista direto do banco de dados através do DAO conectado
         ProdutoDAO dao = new ProdutoDAO();
         List<Produto> lista = dao.listarTodos();
 
-        // Varre a lista de produtos montando o array para a tabela gráfica
         for (Produto p : lista) {
             String statusAtivo = p.isAtivo() ? "Ativo" : "Inativo";
 
-            // Texto do fornecedor amigável (como ainda não fizemos JOIN, mostra o ID)
             String fornecedorExibicao = (p.getFkFornecedor() == 0) ? "Sem fornecedor" : "ID Fornecedor: " + p.getFkFornecedor();
 
-            // Adiciona a linha respeitando a ordem das colunas da sua tabela
-            // IMPORTANTE: Configure sua JTable no NetBeans para possuir de 5 a 6 colunas!
             modeloTabela.addRow(new Object[]{
-                p.getIdProduto(), // Coluna 0 (ID)
-                p.getNomeProduto(), // Coluna 1 (Nome)
-                p.getDescricao(), // Coluna 2 (Descrição)
-                String.format("R$ %.2f", p.getPrecoVenda()), // Coluna 3 (Preço formatado)
-                p.getEstoqueAtual(), // Coluna 4 (Quantidade em estoque)
+                p.getIdProduto(),
+                p.getNomeProduto(),
+                p.getDescricao(),
+                String.format("R$ %.2f", p.getPrecoVenda()),
+                p.getEstoqueAtual(),
                 p.isAtivo() ? "Ativo" : "Inativo",
-                (p.getFkFornecedor() == 0) ? "Sem fornecedor" : "ID: " + p.getFkFornecedor()// Coluna 5 (Status)
+                (p.getFkFornecedor() == 0) ? "Sem fornecedor" : "ID: " + p.getFkFornecedor()
             });
         }
         sorter = new TableRowSorter<>(modeloTabela);
         tblProdutos.setRowSorter(sorter);
-
     }
 
     /**
@@ -190,31 +177,25 @@ public class ListagemProdutos extends javax.swing.JFrame {
 
     private void btnPesquisarNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarNomeActionPerformed
 
-        // Substitua a linha 143 por isto:
-        String texto = txtProdutoPesquisar.getText().trim(); // Mude txtPesquisa para o nome do seu campo de busca se for diferente
+        String texto = txtProdutoPesquisar.getText().trim();
         if (texto.length() == 0) {
             sorter.setRowFilter(null);
         } else {
-            sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + texto, 1)); // Filtra pelo Nome na Coluna 1
+            sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + texto, 1));
         }
-
     }//GEN-LAST:event_btnPesquisarNomeActionPerformed
 
     private void btnCadastroProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastroProdutoActionPerformed
 
         CadastroProduto telaCadastro = new CadastroProduto(this.usuarioLogado);
-
-        // 2. Centraliza a tela de cadastro no meio do monitor
         telaCadastro.setLocationRelativeTo(null);
-
-        // 3. Torna a tela de cadastro visível
         telaCadastro.setVisible(true);
-        this.dispose(); // Fecha a tela de listagem atual
+        this.dispose();
+
     }//GEN-LAST:event_btnCadastroProdutoActionPerformed
 
     private void btnExcluirProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirProdutoActionPerformed
 
-        // 1. Verifica se o usuário selecionou uma linha na JTable
         int linhaSelecionada = tblProdutos.getSelectedRow();
 
         if (linhaSelecionada == -1) {
@@ -222,26 +203,22 @@ public class ListagemProdutos extends javax.swing.JFrame {
             return;
         }
 
-        // 2. Pergunta se o usuário tem certeza (Boa prática de UX)
         int confirmar = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja excluir este produto?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
 
         if (confirmar == JOptionPane.YES_OPTION) {
-            // 3. Pega o ID da primeira coluna (índice 0) da linha selecionada
+
             int idProduto = (int) tblProdutos.getValueAt(linhaSelecionada, 0);
 
-            // 4. Executa a exclusão através do seu ProdutoDAO
             ProdutoDAO dao = new ProdutoDAO();
             dao.excluir(idProduto);
 
-            // 5. Atualiza a tabela na tela para sumir com o produto deletado
             preencherTabela();
             JOptionPane.showMessageDialog(this, "Produto excluído com sucesso!");
         }
-
-
     }//GEN-LAST:event_btnExcluirProdutoActionPerformed
 
     private void btnVoltarTelaInicialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarTelaInicialActionPerformed
+
         TelaInicial telaInicial = new TelaInicial(this.usuarioLogado);
         telaInicial.setLocationRelativeTo(null);
         telaInicial.setVisible(true);
@@ -256,34 +233,28 @@ public class ListagemProdutos extends javax.swing.JFrame {
         ProdutoDAO dao = new ProdutoDAO();
         List<Produto> listaFiltrada;
 
-        // Se o campo estiver vazio, traz tudo. Se tiver texto, filtra.
         if (termoBusca.isEmpty()) {
             listaFiltrada = dao.listarTodos();
         } else {
             listaFiltrada = dao.pesquisarPorNome(termoBusca);
         }
 
-        // Atualiza a JTable apenas com o resultado do filtro
         DefaultTableModel modelo = (DefaultTableModel) tblProdutos.getModel();
         modelo.setNumRows(0);
 
         for (Produto p : listaFiltrada) {
-        // DEIXE O SEU LAÇO FOR ASSIM:
 
-    String statusAtivo = p.isAtivo() ? "Ativo" : "Inativo";
+            String statusAtivo = p.isAtivo() ? "Ativo" : "Inativo";
 
-    modelo.addRow(new Object[]{
-        p.getIdProduto(),
-        p.getNomeProduto(),
-        p.getDescricao(),
-        String.format("R$ %.2f", p.getPrecoVenda()), // Mantém o preço formatado
-        p.getEstoqueAtual(),
-        statusAtivo // Mantém o padrão "Ativo"/"Inativo"
-    });
-}
-
-    
-
+            modelo.addRow(new Object[]{
+                p.getIdProduto(),
+                p.getNomeProduto(),
+                p.getDescricao(),
+                String.format("R$ %.2f", p.getPrecoVenda()),
+                p.getEstoqueAtual(),
+                statusAtivo
+            });
+        }
     }//GEN-LAST:event_txtProdutoPesquisarKeyReleased
 
     /**

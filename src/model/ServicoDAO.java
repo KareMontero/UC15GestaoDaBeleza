@@ -10,7 +10,6 @@ import java.util.List;
 
 public class ServicoDAO {
 
-    // 1. MÉTODO PARA INSERIR NO BANCO
     public void Adicionar(Servico serv) {
         String sql = "INSERT INTO servico (servico, descricao, preco, categoria, estoqueProduto, qtidadeProduto, ativo) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -42,7 +41,6 @@ public class ServicoDAO {
         }
     }
 
-    // 2. MÉTODO PARA LISTAR TODOS DO BANCO
     public List<Servico> listarTodos() {
         String sql = "SELECT * FROM servico ORDER BY servico";
         List<Servico> lista = new ArrayList<>();
@@ -78,7 +76,6 @@ public class ServicoDAO {
         return lista;
     }
 
-    // 3. MÉTODO PARA EXCLUIR POR ID DO BANCO
     public void excluir(int idServico) {
         String sql = "DELETE FROM servico WHERE idServico = ?";
         ConexaoJDBC conexaoJDBC = new ConexaoJDBC();
@@ -101,7 +98,6 @@ public class ServicoDAO {
         }
     }
 
-    // 4. MÉTODO PARA ATUALIZAR UM SERVIÇO JÁ EXISTENTE
     public void atualizar(Servico serv) {
         String sql = "UPDATE servico SET servico = ?, descricao = ?, preco = ?, "
                 + "categoria = ?, estoqueProduto = ?, qtidadeProduto = ?, ativo = ? WHERE idServico = ?";
@@ -133,7 +129,6 @@ public class ServicoDAO {
         }
     }
 
-    // 5. MÉTODO PARA PESQUISAR SERVIÇOS PELO NOME
     public List<Servico> pesquisarPorNome(String nomeBusca) {
         String sql = "SELECT * FROM servico WHERE servico LIKE ? ORDER BY servico";
         List<Servico> lista = new ArrayList<>();
@@ -172,4 +167,3 @@ public class ServicoDAO {
         return lista;
     }
 }
-

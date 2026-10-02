@@ -2,18 +2,14 @@ package view;
 
 import javax.swing.JOptionPane;
 
-/**
- *
- * @author karen
- */
 public class CadastroFornecedor extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CadastroFornecedor.class.getName());
-    // Cole estas 3 linhas no topo da classe CadastroFornecedor, abaixo de public class...
+
     private int idEnderecoSelecionado = 0;
     private javax.swing.DefaultListModel<String> listaModelTelefones = new javax.swing.DefaultListModel<>();
     private java.util.List<model.Telefone> telefonesParaSalvar = new java.util.ArrayList<>();
-private model.Usuario usuarioLogado;
+    private model.Usuario usuarioLogado;
 
     /**
      * Creates new form CadastroFornecedor
@@ -306,7 +302,6 @@ private model.Usuario usuarioLogado;
 
     private void btnCadastrarFornecedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarFornecedorActionPerformed
 
-        // 1. Validar se os campos obrigatórios estão preenchidos
         if (txtFornecedor.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "O campo Empresa (Razão Social) é obrigatório!", "Erro de Validação", JOptionPane.WARNING_MESSAGE);
             txtFornecedor.requestFocus();
@@ -314,7 +309,7 @@ private model.Usuario usuarioLogado;
         }
 
         try {
-            // 2. Criar o objeto de modelo (Fornecedor) e pegar os textos da tela
+
             model.Fornecedor forn = new model.Fornecedor();
             forn.setRazaoSocial(txtFornecedor.getText().trim());
             forn.setCnpj(txtCnpj.getText().trim());
@@ -323,15 +318,11 @@ private model.Usuario usuarioLogado;
             forn.setObservacao(txpObsFornecedor.getText().trim());
             forn.setAtivo(rbFornecedorAtivo.isSelected());
 
-            // REMOVIDO: as linhas de setEndereco, setTelefoneFornecedor e setDataCadastro sumiram!
-            // 3. ATUALIZADO: Vincula a chave estrangeira do endereço selecionado (0 se não escolheu)
             forn.setFkEndereco(this.idEnderecoSelecionado);
 
-            // 4. ATUALIZADO: Executa a gravação passando o Fornecedor E a lista de telefones do JList
             model.FornecedorDAO dao = new model.FornecedorDAO();
             dao.Adicionar(forn, telefonesParaSalvar);
 
-            // 5. Mostrar mensagem de sucesso e limpar o formulário
             JOptionPane.showMessageDialog(this, "Fornecedor cadastrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             limparCampos();
 
@@ -339,24 +330,14 @@ private model.Usuario usuarioLogado;
             JOptionPane.showMessageDialog(this, "Erro crítico ao salvar fornecedor:\n" + e.getMessage(), "Erro de Banco", JOptionPane.ERROR_MESSAGE);
         }
 
-
     }//GEN-LAST:event_btnCadastrarFornecedorActionPerformed
 
     private void btnVoltarTPrincipalFornecedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarTPrincipalFornecedorActionPerformed
-                                                           
-    // 1. Instancia a Tela Inicial passando o usuário logado para manter a sessão ativa
-    // (Ajuste 'this.usuarioLogado' caso o nome da variável de usuário nessa tela seja diferente)
-    TelaInicial telaInicial = new TelaInicial(this.usuarioLogado);
-    
-    // 2. Centraliza a Tela Inicial
-    telaInicial.setLocationRelativeTo(null);
-    
-    // 3. Torna a Tela Inicial visível novamente
-    telaInicial.setVisible(true);
-    
-    // 4. Fecha APENAS a tela atual de fornecedores
-    this.dispose();
 
+        TelaInicial telaInicial = new TelaInicial(this.usuarioLogado);
+        telaInicial.setLocationRelativeTo(null);
+        telaInicial.setVisible(true);
+        this.dispose();
 
     }//GEN-LAST:event_btnVoltarTPrincipalFornecedorActionPerformed
 
@@ -366,35 +347,19 @@ private model.Usuario usuarioLogado;
 
     private void btnListagemFornecedoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListagemFornecedoresActionPerformed
 
-        // 1. Cria o objeto da sua tela de listagem
         ListagemFornecedores telaListagem = new ListagemFornecedores(this.usuarioLogado);
-
-        // 2. Centraliza a tela de listagem no meio do monitor
         telaListagem.setLocationRelativeTo(null);
-
-        // 3. Torna a tela de listagem visível para o usuário
         telaListagem.setVisible(true);
-
-        // 4. OPCIONAL: Se quiser fechar a tela de cadastro ao abrir a lista, descomente a linha abaixo:
         this.dispose();
 
     }//GEN-LAST:event_btnListagemFornecedoresActionPerformed
 
     private void btnAdicionarEnderecoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarEnderecoActionPerformed
 
-        // Cria a tela de endereço passando "this" (esta tela) e "true" (modal)
         TelaEndereco telaEnd = new TelaEndereco(this, true);
-
-        // Centraliza a janelinha na tela
         telaEnd.setLocationRelativeTo(this);
-
-        // Abre a tela e congela a de trás até que ela seja fechada
         telaEnd.setVisible(true);
-
-        // Quando a tela de endereço fechar, capturamos o ID que ela gerou no banco!
         this.idEnderecoSelecionado = telaEnd.getIdEnderecoGerado();
-
-        // Feedback opcional para você ver se o ID veio certo
         if (this.idEnderecoSelecionado > 0) {
             javax.swing.JOptionPane.showMessageDialog(this, "Endereço vinculado! ID: " + this.idEnderecoSelecionado);
         }
@@ -405,28 +370,24 @@ private model.Usuario usuarioLogado;
         String numero = txtTelFornecedor.getText().trim();
         String tipo = cbTipoTel.getSelectedItem().toString();
 
-        // Validação simples
         if (ddd.isEmpty() || numero.isEmpty() || cbTipoTel.getSelectedIndex() == 0) {
             javax.swing.JOptionPane.showMessageDialog(this, "Preencha o DDD, Telefone e selecione o Tipo!");
             return;
         }
 
-        // 1. Cria o objeto Telefone com os novos dados
         model.Telefone novoTel = new model.Telefone();
         novoTel.setDdd(ddd);
         novoTel.setTelefone(numero);
         novoTel.setTelefoneTipo(tipo);
 
-        // 2. Guarda na nossa lista de salvamento
         telefonesParaSalvar.add(novoTel);
 
-        // 3. JOGA VISUALMENTE NO JLIST (é essa linha que faz o texto aparecer na caixinha!)
         listaModelTelefones.addElement(tipo + ": (" + ddd + ") " + numero);
 
-        // 4. Limpa os campos de digitação do telefone
         txtDdd.setText("");
         txtTelFornecedor.setText("");
         cbTipoTel.setSelectedIndex(0);
+
     }//GEN-LAST:event_btnAdicionarTelActionPerformed
 
     private void limparCampos() {
@@ -442,17 +403,16 @@ private model.Usuario usuarioLogado;
         txtDdd.setText("");
         txtTelFornecedor.setText("");
         cbTipoTel.setSelectedIndex(0);
-        
-           if (this.telefonesParaSalvar != null) {
-        this.telefonesParaSalvar.clear();
-        
-         if (listTelefones.getModel() instanceof javax.swing.DefaultListModel) {
-        javax.swing.DefaultListModel<?> modelList = (javax.swing.DefaultListModel<?>) listTelefones.getModel();
-        modelList.clear(); // Esvazia o JList visualmente
-   
-        
-    }
-           }
+
+        if (this.telefonesParaSalvar != null) {
+            this.telefonesParaSalvar.clear();
+
+            if (listTelefones.getModel() instanceof javax.swing.DefaultListModel) {
+                javax.swing.DefaultListModel<?> modelList = (javax.swing.DefaultListModel<?>) listTelefones.getModel();
+                modelList.clear();
+
+            }
+        }
     }
 
     /**

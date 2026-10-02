@@ -1,16 +1,12 @@
 package model;
 
-/**
- *
- * @author karen
- */
 public class Usuario {
 
     private int idUsuario;
     private int funcionarioId;
     private String login;
     private String senhaHash;
-    private String perfil; // 'gerente', 'atendente' ou 'funcionario'
+    private String perfil;
     private boolean ativo;
 
     public Usuario() {
@@ -64,5 +60,4 @@ public class Usuario {
         this.ativo = ativo;
     }
 
-    
 }
