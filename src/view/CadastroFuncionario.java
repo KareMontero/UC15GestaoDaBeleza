@@ -357,6 +357,7 @@ public class CadastroFuncionario extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCadastrarFuncionarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarFuncionarioActionPerformed
+
         if (txtFuncionario.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "O nome do funcionário é obrigatório!", "Erro de Validação", JOptionPane.WARNING_MESSAGE);
             txtFuncionario.requestFocus();
@@ -453,27 +454,19 @@ public class CadastroFuncionario extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Erro crítico ao salvar no banco:\n" + e.getMessage(), "Erro de Banco", JOptionPane.ERROR_MESSAGE);
         }
 
-
     }//GEN-LAST:event_btnCadastrarFuncionarioActionPerformed
 
     private void btnVoltarTPrincipalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarTPrincipalActionPerformed
-                                       
-    // 1. Instancia a Tela Inicial passando o usuário logado para manter a sessão ativa
-    TelaInicial telaInicial = new TelaInicial(this.usuarioLogado);
-    
-    // 2. Centraliza a Tela Inicial
-    telaInicial.setLocationRelativeTo(null);
-    
-    // 3. Torna a Tela Inicial visível novamente
-    telaInicial.setVisible(true);
-    
-    // 4. Fecha APENAS a tela atual de Cadastro de Funcionário
-    this.dispose();
 
+        TelaInicial telaInicial = new TelaInicial(this.usuarioLogado);
+        telaInicial.setLocationRelativeTo(null);
+        telaInicial.setVisible(true);
+        this.dispose();
 
     }//GEN-LAST:event_btnVoltarTPrincipalActionPerformed
 
     private void btnlimparFuncionarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnlimparFuncionarioActionPerformed
+
         limparCampos();
         listaModelTelefones.clear();
         telefonesParaSalvar.clear();
@@ -481,6 +474,7 @@ public class CadastroFuncionario extends javax.swing.JFrame {
     }//GEN-LAST:event_btnlimparFuncionarioActionPerformed
 
     private void btnAdicionarTelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarTelActionPerformed
+
         String ddd = txtDdd.getText().trim();
         String numero = txtTelFuncionario.getText().trim();
         String tipo = cbTipoTel.getSelectedItem().toString();
@@ -505,10 +499,10 @@ public class CadastroFuncionario extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAdicionarTelActionPerformed
 
     private void btnAdicionarEnderecoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarEnderecoActionPerformed
+
         TelaEndereco telaEnd = new TelaEndereco(this, true);
         telaEnd.setLocationRelativeTo(this);
         telaEnd.setVisible(true);
-
         this.idEnderecoSelecionado = telaEnd.getIdEnderecoGerado();
 
         if (this.idEnderecoSelecionado > 0) {
@@ -517,9 +511,11 @@ public class CadastroFuncionario extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAdicionarEnderecoActionPerformed
 
     private void btnListagemFuncionariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListagemFuncionariosActionPerformed
+
         ListagemFuncionarios telaListagem = new ListagemFuncionarios(this.usuarioLogado);
         telaListagem.setLocationRelativeTo(null);
         telaListagem.setVisible(true);
+
         this.dispose();
     }//GEN-LAST:event_btnListagemFuncionariosActionPerformed
 

@@ -2,10 +2,6 @@ package view;
 
 import javax.swing.JOptionPane;
 
-/**
- *
- * @author karen
- */
 public class CadastroProduto extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CadastroProduto.class.getName());
@@ -35,20 +31,18 @@ public class CadastroProduto extends javax.swing.JFrame {
 
     private void carregarFornecedoresNoCombo() {
         try {
-            // 1. Busca os fornecedores direto do banco de dados
+
             model.FornecedorDAO fDAO = new model.FornecedorDAO();
             java.util.List<model.Fornecedor> lista = fDAO.listarTodos();
 
-            // 2. Limpa os itens padrão ("fornecedor A, B, C") do ComboBox
             cbFornecedorAtivo.removeAllItems();
             cbFornecedorAtivo.addItem("Selecione o fornecedor:");
 
-            // 3. Joga os fornecedores reais do banco dentro do seu ComboBox da tela
             for (model.Fornecedor f : lista) {
                 cbFornecedorAtivo.addItem(f.getIdFornecedor() + " - " + f.getRazaoSocial());
             }
         } catch (Exception e) {
-            // Se der algum erro (ex: banco desligado), deixa uma opção padrão de segurança
+
             cbFornecedorAtivo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Selecione o fornecedor:"}));
         }
     }
@@ -292,7 +286,6 @@ public class CadastroProduto extends javax.swing.JFrame {
 
     private void btnCadastrarProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarProdutoActionPerformed
 
-        // 1. Validar se o campo obrigatório (Nome do Produto) foi preenchido
         if (txtProduto.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "O nome do produto é obrigatório!", "Aviso", JOptionPane.WARNING_MESSAGE);
             txtProduto.requestFocus();
@@ -300,65 +293,49 @@ public class CadastroProduto extends javax.swing.JFrame {
         }
 
         try {
-            // 2. Criar o objeto de modelo (Produto) e capturar os dados simples da tela
+
             model.Produto prod = new model.Produto();
             prod.setNomeProduto(txtProduto.getText().trim());
             prod.setDescricao(txpObsFuncionario.getText().trim());
             prod.setAtivo(rbProdAtivo.isSelected());
 
-            // Tratamento seguro para Quantidade (Estoque)
             try {
                 prod.setEstoqueAtual(Integer.parseInt(txtQdeProduto.getText().trim()));
             } catch (NumberFormatException e) {
-                prod.setEstoqueAtual(0); // Garante 0 se o campo estiver vazio ou inválido
+                prod.setEstoqueAtual(0);
             }
 
-            // Tratamento seguro para Preço de Venda (converte vírgula em ponto se o usuário digitar)
             try {
                 prod.setPrecoVenda(Double.parseDouble(txtPrecoProduto.getText().trim().replace(",", ".")));
             } catch (NumberFormatException e) {
                 prod.setPrecoVenda(0.0);
             }
 
-            // 3. CAPTURA DO FORNECEDOR RELACIONAL:
-            // Pegamos o texto do item selecionado (Ex: "1 - Distribuidora A") e extraímos apenas o ID
             int idFornecedorSelecionado = 0;
             if (cbFornecedorAtivo.getSelectedIndex() > 0) {
                 String itemSelecionado = cbFornecedorAtivo.getSelectedItem().toString();
-                // Divide o texto onde tem " - " e pega a primeira parte (o número do ID)
+
                 idFornecedorSelecionado = Integer.parseInt(itemSelecionado.split(" - ")[0]);
             }
 
-            prod.setFkFornecedor(idFornecedorSelecionado); // Vincula o ID na Chave Estrangeira
+            prod.setFkFornecedor(idFornecedorSelecionado);
 
-            // 4. Chamar o DAO para executar o INSERT real no MySQL
             model.ProdutoDAO dao = new model.ProdutoDAO();
             dao.Adicionar(prod);
 
-            // 5. Mostrar mensagem de sucesso e resetar o formulário
             JOptionPane.showMessageDialog(this, "Produto cadastrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             limparCampos();
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro crítico ao salvar produto:\n" + e.getMessage(), "Erro de Banco", JOptionPane.ERROR_MESSAGE);
         }
-
-
     }//GEN-LAST:event_btnCadastrarProdutoActionPerformed
 
     private void btnVoltarTPrincipalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarTPrincipalActionPerformed
 
-        // 1. Instancia a Tela Inicial passando o usuário logado para manter a sessão ativa
-        // (Ajuste 'this.usuarioLogado' caso o nome da variável de usuário nesta tela seja diferente)
         TelaInicial telaInicial = new TelaInicial(this.usuarioLogado);
-
-        // 2. Centraliza a Tela Inicial
         telaInicial.setLocationRelativeTo(null);
-
-        // 3. Torna a Tela Inicial visível novamente
         telaInicial.setVisible(true);
-
-        // 4. Fecha a tela atual de Produtos liberando memória
         this.dispose();
 
 
@@ -366,28 +343,18 @@ public class CadastroProduto extends javax.swing.JFrame {
 
     private void btnlimparCProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnlimparCProdutoActionPerformed
 
-        // 1. Executa a limpeza padronizada de todos os campos e listas
         limparCampos();
-
-        // 2. Coloca o cursor de digitação de volta no campo do Produto
         txtProduto.requestFocusInWindow();
-
 
     }//GEN-LAST:event_btnlimparCProdutoActionPerformed
 
     private void btnListagemProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListagemProdutoActionPerformed
 
-        // 1. Cria o objeto da sua tela de listagem
         ListagemProdutos telaListagem = new ListagemProdutos(this.usuarioLogado);
-
-        // 2. Centraliza a tela de listagem no meio do monitor
         telaListagem.setLocationRelativeTo(null);
-
-        // 3. Torna a tela de listagem visível para o usuário
         telaListagem.setVisible(true);
-
-        // 4. OPCIONAL: Se quiser fechar a tela de cadastro ao abrir a lista, descomente a linha abaixo:
         this.dispose();
+
     }//GEN-LAST:event_btnListagemProdutoActionPerformed
 
     /**

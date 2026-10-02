@@ -5,18 +5,25 @@ public class TelaAgenda extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaAgenda.class.getName());
     private model.Usuario usuarioLogado;
 
-    /**
-     * Creates new form Agenda
-     */
     public TelaAgenda(model.Usuario usuario) {
         this.usuarioLogado = usuario;
         initComponents();
 
-   
-    
         cbServico.removeAllItems();
         carregarCombosDoBanco();
         atualizarTabelaAgenda();
+
+        configurarPermissoesAgenda();
+    }
+
+    private void configurarPermissoesAgenda() {
+
+        if (usuarioLogado.getPerfil().equalsIgnoreCase("funcionario")) {
+
+            btnExcluirAgendamento.setEnabled(false);
+
+            logger.info("Botão de exclusão desativado para o funcionário: " + usuarioLogado.getLogin());
+        }
     }
 
     /**
@@ -231,36 +238,36 @@ public class TelaAgenda extends javax.swing.JFrame {
 
     private void btnExcluirAgendamentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirAgendamentoActionPerformed
 
-        // 1. VALIDAÇÃO: Verifica se o atendente selecionou uma linha na tabela (jTable1)
+        if (usuarioLogado.getPerfil().equalsIgnoreCase("funcionario")) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Operação não permitida! Funcionários não têm permissão para deletar agendamentos.",
+                    "Acesso Restrito", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         int linhaSelecionada = jTable1.getSelectedRow();
         if (linhaSelecionada == -1) {
             javax.swing.JOptionPane.showMessageDialog(this, "Por favor, selecione um agendamento na tabela para remover.");
             return;
         }
 
-        // Converte o índice caso a tabela esteja ordenada ou filtrada
         int linhaModelo = jTable1.convertRowIndexToModel(linhaSelecionada);
 
         try {
-            // 2. CAPTURA DOS DADOS DIRETO DA JTABLE1:
-            // Coluna 0 é o ID TelaAgenda (oculto), Coluna 1 é a Data e Coluna 3 é o Nome do Cliente
+
             int idAgenda = Integer.parseInt(jTable1.getModel().getValueAt(linhaModelo, 0).toString());
             String dataAtendimento = jTable1.getModel().getValueAt(linhaModelo, 1).toString();
             String clienteNome = jTable1.getModel().getValueAt(linhaModelo, 3).toString();
 
-            // 3. CONFIRMAÇÃO: Pergunta se tem certeza para evitar cliques por engano
             int confirmar = javax.swing.JOptionPane.showConfirmDialog(this,
                     "Tem certeza que deseja desmarcar o agendamento de '" + clienteNome + "' marcado para " + dataAtendimento + "?",
                     "Confirmar Cancelamento", javax.swing.JOptionPane.YES_NO_OPTION);
 
             if (confirmar == javax.swing.JOptionPane.YES_OPTION) {
-                // 4. BANCO DE DADOS: Instancia o seu DAO e executa o UPDATE lógico para 'desmarcado'
+
                 model.AgendaDAO daoAgenda = new model.AgendaDAO();
                 daoAgenda.desmarcarAgendamento(idAgenda);
 
-// Ajuste temporário se o método for excluirItemDoKit ou desmarcarAgendamento
-                // Se o seu método no DAO se chama 'desmarcarAgendamento', você pode usar a linha abaixo:
-                // daoAgenda.desmarcarAgendamento(idAgenda);
                 javax.swing.JOptionPane.showMessageDialog(this, "Agendamento desmarcado com sucesso!");
 
                 // 5. ATUALIZAÇÃO: Força a jTable1 a se redesenhar buscando os dados atualizados do MySQL
@@ -275,75 +282,64 @@ public class TelaAgenda extends javax.swing.JFrame {
     }//GEN-LAST:event_btnExcluirAgendamentoActionPerformed
 
     private void btnVoltarTPrincipalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarTPrincipalActionPerformed
+
         dispose();
+
     }//GEN-LAST:event_btnVoltarTPrincipalActionPerformed
 
     private void btnCadastrarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarClienteActionPerformed
         try {
-            // 1. Instancia a sua tela de cadastro de clientes existente
-            view.CadastroCliente telaCliente = new view.CadastroCliente(this.usuarioLogado); // Ajuste o nome da classe se for 'FormCliente', 'CadastroClientes', etc.
 
-            // 2. Faz a tela de clientes aparecer na frente do atendente ✨
+            view.CadastroCliente telaCliente = new view.CadastroCliente(this.usuarioLogado);
             telaCliente.setVisible(true);
-            telaCliente.setLocationRelativeTo(null); // Centraliza a tela de clientes no monitor
-
-            // NOTA Opcional: Se você quiser fechar a agenda quando a de clientes abrir, descomente a linha abaixo:
-            // this.dispose();
+            telaCliente.setLocationRelativeTo(null);
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Erro ao abrir a tela de cadastro de clientes: " + e.getMessage());
         }
     }//GEN-LAST:event_btnCadastrarClienteActionPerformed
 
     private void btnAgendarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgendarActionPerformed
-                                           
-    try {
-        // 1. CAPTURA DOS TEXTOS LIMPANDO ESPAÇOS EM BRANCO INVISÍVEIS
-        String nomeCliente = txtNomeCliente.getText().trim();
-        String dataDigitada = txtData.getText().trim();    // Ex: "02/10/2026"
-        String horaDigitada = txtHorario.getText().trim(); // Ex: "14:00" (Garante que use o nome exato do seu campo)
-        
-        // Validação contra campos vazios ou não preenchidos completamente na máscara
-        if (nomeCliente.isEmpty() || dataDigitada.contains("_") || horaDigitada.contains("_") || cbServico.getSelectedItem() == null) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, preencha o Nome, Data e Hora completos!");
-            return;
-        }
-
-         model.ClienteDAO cDao = new model.ClienteDAO(); // Ajuste para o seu pacote de DAO se necessário
-        if (!cDao.existeClientePorNome(nomeCliente)) {
-            
-            // 1. Avisa o atendente de forma clara
-            javax.swing.JOptionPane.showMessageDialog(this, 
-                "Cliente '" + nomeCliente + "' não encontrado no sistema!\n" +
-                "Abrindo a tela de cadastro para registrar o cliente.", 
-                "Cliente Não Encontrado", javax.swing.JOptionPane.WARNING_MESSAGE);
-return;
-        }
-        // 2. CONVERSÃO À PROVA DE FALHAS (Separando os números de forma manual) ✨
-        // Isso ignora qualquer problema de caractere oculto da máscara!
-        String[] partesData = dataDigitada.split("/"); // Separa em: [02, 10, 2026]
-        String dia = partesData[0].trim();
-        String mes = partesData[1].trim();
-        String ano = partesData[2].trim();
-        
-        String[] partesHora = horaDigitada.split(":"); // Separa em: [14, 00]
-        String hora = partesHora[0].trim();
-        String minuto = partesHora[1].trim();
-
-        // Monta a String no formato ISO internacional direto (AAAA-MM-DD HH:MM:SS)
-        // Esse formato é aceito nativamente pelo Timestamp.valueOf() sem precisar de SimpleDateFormat! 🚀
-        String formatoDirectSQL = ano + "-" + mes + "-" + dia + " " + hora + ":" + minuto + ":00";
-
-        // 3. CRIAÇÃO DO TIMESTAMP SEGURO
-        java.sql.Timestamp dataHora;
         try {
-            dataHora = java.sql.Timestamp.valueOf(formatoDirectSQL);
-        } catch (IllegalArgumentException e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Erro interno na conversão do tempo. Verifique os valores digitados!");
-            return;
-        }
 
-        // 4. CAPTURA DO ID DO SERVIÇO (Daqui para baixo o seu código continua exatamente igual...)
-        String textoServico = cbServico.getSelectedItem().toString();
+            String nomeCliente = txtNomeCliente.getText().trim();
+            String dataDigitada = txtData.getText().trim();
+            String horaDigitada = txtHorario.getText().trim();
+
+            if (nomeCliente.isEmpty() || dataDigitada.contains("_") || horaDigitada.contains("_") || cbServico.getSelectedItem() == null) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Por favor, preencha o Nome, Data e Hora completos!");
+                return;
+            }
+
+            model.ClienteDAO cDao = new model.ClienteDAO();
+            if (!cDao.existeClientePorNome(nomeCliente)) {
+
+                javax.swing.JOptionPane.showMessageDialog(this,
+                        "Cliente '" + nomeCliente + "' não encontrado no sistema!\n"
+                        + "Abrindo a tela de cadastro para registrar o cliente.",
+                        "Cliente Não Encontrado", javax.swing.JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            String[] partesData = dataDigitada.split("/");
+            String dia = partesData[0].trim();
+            String mes = partesData[1].trim();
+            String ano = partesData[2].trim();
+
+            String[] partesHora = horaDigitada.split(":");
+            String hora = partesHora[0].trim();
+            String minuto = partesHora[1].trim();
+
+            String formatoDirectSQL = ano + "-" + mes + "-" + dia + " " + hora + ":" + minuto + ":00";
+
+            java.sql.Timestamp dataHora;
+            try {
+                dataHora = java.sql.Timestamp.valueOf(formatoDirectSQL);
+            } catch (IllegalArgumentException e) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Erro interno na conversão do tempo. Verifique os valores digitados!");
+                return;
+            }
+
+            String textoServico = cbServico.getSelectedItem().toString();
 
             int idServico = -1;
             if (textoServico.contains("-")) {
@@ -355,32 +351,28 @@ return;
                 return;
             }
 
-            // 5. PREÇO HISTÓRICO: Iniciamos com o valor padrão do serviço (buscaremos o real ou fixamos 0.0)
             double precoServico = 0.0;
 
-            // 6. MONTAGEM DOS OBJETOS PADRÃO (Utilizando os IDs reais que inserimos no seu banco!) ✨
             model.Cliente clienteFake = new model.Cliente();
-            clienteFake.setIdCliente(1); // Vincula ao ID 1 (Ana Maria) temporariamente para não quebrar a FK
+            clienteFake.setIdCliente(1);
 
             model.Funcionario funcFake = new model.Funcionario();
-            funcFake.setIdFuncionario(3); // Vincula à Beatriz Rocha (ID 3) que você cadastrou no banco!
+            funcFake.setIdFuncionario(3);
 
             model.Servico servico = new model.Servico();
             servico.setIdServico(idServico);
 
-            // 7. PREENCHIMENTO DO MODELO DA AGENDA
             model.Agenda novaAgenda = new model.Agenda();
             novaAgenda.setDataHora(dataHora);
             novaAgenda.setCliente(clienteFake);
             novaAgenda.setFuncionario(funcFake);
             novaAgenda.setServico(servico);
 
-            // Proteção contra usuário nulo: se não houver usuário logado no teste, força o ID 3 (Beatriz)
             if (this.usuarioLogado != null) {
                 novaAgenda.setUsuario(this.usuarioLogado);
             } else {
                 model.Usuario userFake = new model.Usuario();
-                userFake.setIdUsuario(3); // Usuário padrão de testes da Beatriz
+                userFake.setIdUsuario(3);
                 novaAgenda.setUsuario(userFake);
             }
 
@@ -388,146 +380,119 @@ return;
             novaAgenda.setPrecoServico(precoServico);
             novaAgenda.setValorProduto(0.0);
             novaAgenda.setDesconto(0.0);
-            novaAgenda.setObservacao("Cliente: " + nomeCliente); // Resgata o nome real digitado na caixa de texto! ✨
+            novaAgenda.setObservacao("Cliente: " + nomeCliente);
 
-            // 8. GRAVAÇÃO NO BANCO DE DADOS
             model.AgendaDAO daoAgenda = new model.AgendaDAO();
             daoAgenda.inserir(novaAgenda);
 
             javax.swing.JOptionPane.showMessageDialog(this, "Agendamento de '" + nomeCliente + "' realizado com sucesso!");
 
-            // 9. LIMPEZA DOS CAMPOS DA TELA
             txtNomeCliente.setText("");
             txtData.setText("");
             txtHorario.setText("");
             cbServico.setSelectedIndex(0);
 
-            // 10. REFRESH SEGURO DA JTABLE1 (Sem os filtros que quebravam a tela!) 🧼
             atualizarTabelaAgenda();
 
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Erro ao agendar: " + e.getMessage());
         }
-
-
     }//GEN-LAST:event_btnAgendarActionPerformed
 
     private void btnLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparActionPerformed
-                                         
-    // 1. Reseta os campos de texto comuns e mascarados
-    if (txtNomeCliente != null) {
-        txtNomeCliente.setText("");
-    }
-    
-    // Como trocamos para os campos formatados no Design, limpamos eles voltando a máscara ao estado inicial 🧼
-    if (txtData != null) {
-        txtData.setText(""); 
-    }
-    if (txtHorario != null) {
-        txtHorario.setText(""); // Garante o nome exato do seu campo (txtHorario ou txtHora)
-    }
-    
- 
-    // 2. Reseta o menu de Serviços para a primeira opção ("Selecione um serviço...")
-    if (cbServico != null && cbServico.getItemCount() > 0) {
-        cbServico.setSelectedIndex(0);
-    }
 
-    // 3. Força a tabela a limpar qualquer filtro de pesquisa ativo se houver
-    atualizarTabelaAgenda();
+        if (txtNomeCliente != null) {
+            txtNomeCliente.setText("");
+        }
 
-    // 4. Devolve o foco do teclado para o primeiro campo (Nome do Cliente) para facilitar a digitação ✨
-    if (txtNomeCliente != null) {
-        txtNomeCliente.requestFocus();
-    }
+        if (txtData != null) {
+            txtData.setText("");
+        }
+        if (txtHorario != null) {
+            txtHorario.setText("");
+        }
 
+        if (cbServico != null && cbServico.getItemCount() > 0) {
+            cbServico.setSelectedIndex(0);
+        }
+
+        atualizarTabelaAgenda();
+
+        if (txtNomeCliente != null) {
+            txtNomeCliente.requestFocus();
+        }
     }//GEN-LAST:event_btnLimparActionPerformed
 
     private void atualizarTabelaAgenda() {
-    // 1. Criamos os títulos das colunas exatamente para o layout da sua jTable1
-    String[] colunas = {"ID Agenda", "Data", "Hora", "Cliente", "Serviço Realizado", "Status Atual"};
-    
-    // 2. Criamos um modelo novo de tabela limpo
-    javax.swing.table.DefaultTableModel modeloDefault = new javax.swing.table.DefaultTableModel(colunas, 0);
-    
-    // 3. Forçamos a jTable1 a usar a estrutura definida por código
-    jTable1.setAutoCreateColumnsFromModel(true);
-    jTable1.setModel(modeloDefault);
 
-    try {
-        // 4. Instancia o seu DAO e busca os dados atualizados do MySQL
-        model.AgendaDAO daoAgenda = new model.AgendaDAO();
-        java.util.List<model.Agenda> lista = daoAgenda.listarTodos();
+        String[] colunas = {"ID Agenda", "Data", "Hora", "Cliente", "Serviço Realizado", "Status Atual"};
 
-        // 5. FORMATADORES OFICIAIS DO JAVA: O jeito mais seguro de manipular tempo! 🇧🇷✨
-        java.text.SimpleDateFormat formatadorData = new java.text.SimpleDateFormat("dd/MM/yyyy");
-        java.text.SimpleDateFormat formatadorHora = new java.text.SimpleDateFormat("HH:mm");
+        javax.swing.table.DefaultTableModel modeloDefault = new javax.swing.table.DefaultTableModel(colunas, 0);
 
-        // 6. Percorre a lista vinda do banco e preenche as linhas da tabela
-        for (model.Agenda a : lista) {
-            
-            // FILTRO DE EXCLUSÃO LÓGICA: Se o status for desmarcado, pula e não mostra na tabela! 🔒
-            if (a.getStatus().equalsIgnoreCase("desmarcado")) {
-                continue; 
+        jTable1.setAutoCreateColumnsFromModel(true);
+        jTable1.setModel(modeloDefault);
+
+        try {
+
+            model.AgendaDAO daoAgenda = new model.AgendaDAO();
+            java.util.List<model.Agenda> lista = daoAgenda.listarTodos();
+
+            java.text.SimpleDateFormat formatadorData = new java.text.SimpleDateFormat("dd/MM/yyyy");
+            java.text.SimpleDateFormat formatadorHora = new java.text.SimpleDateFormat("HH:mm");
+
+            for (model.Agenda a : lista) {
+
+                if (a.getStatus().equalsIgnoreCase("desmarcado")) {
+                    continue;
+                }
+
+                String nomeExibirCliente = a.getCliente().getNomeCliente();
+                if (a.getObservacao() != null && a.getObservacao().startsWith("Cliente: ")) {
+                    nomeExibirCliente = a.getObservacao().replace("Cliente: ", "").trim();
+                }
+
+                String dataBrasil = "";
+                String horaBrasil = "";
+                if (a.getDataHora() != null) {
+                    dataBrasil = formatadorData.format(a.getDataHora()); // Fica: "01/10/2026"
+                    horaBrasil = formatadorHora.format(a.getDataHora()); // Fica: "22:14"
+                }
+
+                Object[] linha = {
+                    a.getIdAgenda(),
+                    dataBrasil,
+                    horaBrasil,
+                    nomeExibirCliente,
+                    a.getServico().getServico(),
+                    a.getStatus().toUpperCase()
+                };
+
+                modeloDefault.addRow(linha);
             }
 
-            // Resgata o nome real do cliente que salvamos na observação
-            String nomeExibirCliente = a.getCliente().getNomeCliente(); 
-            if (a.getObservacao() != null && a.getObservacao().startsWith("Cliente: ")) {
-                nomeExibirCliente = a.getObservacao().replace("Cliente: ", "").trim(); 
+            javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorterTabela = new javax.swing.table.TableRowSorter<>(modeloDefault);
+            jTable1.setRowSorter(sorterTabela);
+
+            if (jTable1.getColumnCount() >= 6) {
+                jTable1.getColumnModel().getColumn(0).setMinWidth(0);
+                jTable1.getColumnModel().getColumn(0).setMaxWidth(0);
+                jTable1.getColumnModel().getColumn(0).setPreferredWidth(0);
             }
 
-            // CONVERSÃO SEGURA: Transforma o Timestamp do banco em Strings formatadas sem usar split! 🌟
-            String dataBrasil = "";
-            String horaBrasil = "";
-            if (a.getDataHora() != null) {
-                dataBrasil = formatadorData.format(a.getDataHora()); // Fica: "01/10/2026"
-                horaBrasil = formatadorHora.format(a.getDataHora()); // Fica: "22:14"
-            }
-
-            // Monta a linha visual
-            Object[] linha = {
-                a.getIdAgenda(),            // Coluna 0 (ID oculto)
-                dataBrasil,                 // Coluna 1
-                horaBrasil,                 // Coluna 2
-                nomeExibirCliente,          // Coluna 3
-                a.getServico().getServico(),// Coluna 4
-                a.getStatus().toUpperCase() // Coluna 5
-            };
-            
-            modeloDefault.addRow(linha);
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao carregar a tabela de agendamentos: " + e.getMessage());
         }
-        
-        // 7. Ativa o filtro de ordenação e pesquisa na jTable1
-        javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorterTabela = new javax.swing.table.TableRowSorter<>(modeloDefault);
-        jTable1.setRowSorter(sorterTabela);
-        
-        // 8. Oculta a primeira coluna (Coluna 0 - ID Agenda) para o usuário final
-        if (jTable1.getColumnCount() >= 6) {
-            jTable1.getColumnModel().getColumn(0).setMinWidth(0);
-            jTable1.getColumnModel().getColumn(0).setMaxWidth(0);
-            jTable1.getColumnModel().getColumn(0).setPreferredWidth(0);
-        }
-        
-    } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Erro ao carregar a tabela de agendamentos: " + e.getMessage());
     }
-}
-
 
     private void carregarCombosDoBanco() {
         try {
-            // 1. Limpa o menu de serviços para não duplicar os dados na tela
-            cbServico.removeAllItems();
 
-            // 2. Coloca a opção padrão inteligente que criamos
+            cbServico.removeAllItems();
             cbServico.addItem("Selecione um serviço...");
 
-            // 3. Instancia o seu DAO de Serviços para buscar os dados reais do MySQL
             model.ServicoDAO sDao = new model.ServicoDAO();
             java.util.List<model.Servico> lista = sDao.listarTodos();
 
-            // 4. Percorre a lista trazida do banco e adiciona no ComboBox no padrão "ID - Nome"
             for (model.Servico s : lista) {
                 cbServico.addItem(s.getIdServico() + " - " + s.getServico());
             }
@@ -536,7 +501,6 @@ return;
         }
     }
 
-// Método auxiliar essencial para o botão Agendar conseguir ler o ID do serviço
     private int obterIdCombo(javax.swing.JComboBox combo) {
         if (combo == null || combo.getSelectedItem() == null || combo.getSelectedItem().toString().startsWith("Selecione")) {
             return -1;

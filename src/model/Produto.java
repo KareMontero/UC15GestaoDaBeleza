@@ -3,13 +3,12 @@ package model;
 public class Produto {
 
     private int idProduto;
-    private String nomeProduto; // Alinhado com nomeProduto VARCHAR(100)
-    private String descricao;   // Alinhado com descricao TEXT
-    private double precoVenda;  // Alinhado com precoVenda DECIMAL(10,2)
-    private int estoqueAtual;   // Alinhado com estoqueAtual INT
-    private boolean ativo;      // Alinhado com ativo BOOLEAN
+    private String nomeProduto;
+    private String descricao;
+    private double precoVenda;
+    private int estoqueAtual;
+    private boolean ativo;
 
-    // 2. Chave estrangeira para o vínculo com o Fornecedor (opcional)
     private int fkFornecedor;
 
     public Produto() {

@@ -21,7 +21,7 @@ public class ConexaoJDBC {
    public void conectar(){
        try{
            Class.forName("com.mysql.cj.jdbc.Driver");
-           conexao = DriverManager.getConnection("jdbc:mysql://localhost:3306/gestao_da_beleza_UC_15","root", "##K@10r@73##");
+           conexao = DriverManager.getConnection("jdbc:mysql://localhost:3306/gestao_da_beleza_UC_15","root", "root");
            System.out.println("Conexão bem sucedida");
        } catch (ClassNotFoundException cnfe) {
            System.out.println("Falha ao carregara classe de coneção: classe não encontrada" + cnfe);

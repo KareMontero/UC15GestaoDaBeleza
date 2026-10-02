@@ -1,7 +1,6 @@
 package model;
 
 import conexao.ConexaoJDBC;
-import java.sql.Statement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -98,57 +97,54 @@ public class ClienteDAO {
     }
 
     public List<Cliente> listarTodos() {
-    // Query atualizada para buscar todos os telefones agrupados por vírgula
-    String sql = "SELECT c.*, GROUP_CONCAT(CONCAT('(', t.ddd, ') ', t.telefone) SEPARATOR ', ') AS todos_telefones "
-               + "FROM cliente c "
-               + "LEFT JOIN telefone t ON c.idCliente = t.fk_cliente "
-               + "GROUP BY c.idCliente "
-               + "ORDER BY c.nomeCliente";
-               
-    List<Cliente> lista = new ArrayList<>();
-    ConexaoJDBC conexaoJDBC = new ConexaoJDBC();
 
-    try {
-        conexaoJDBC.conectar();
-        Connection conn = conexaoJDBC.getConexao();
+        String sql = "SELECT c.*, GROUP_CONCAT(CONCAT('(', t.ddd, ') ', t.telefone) SEPARATOR ', ') AS todos_telefones "
+                + "FROM cliente c "
+                + "LEFT JOIN telefone t ON c.idCliente = t.fk_cliente "
+                + "GROUP BY c.idCliente "
+                + "ORDER BY c.nomeCliente";
 
-        if (conn != null) {
-            // Utilizando o try-with-resources para garantir o fechamento seguro de Recursos do JDBC
-            try (PreparedStatement stmt = conn.prepareStatement(sql);
-                 ResultSet rs = stmt.executeQuery()) {
+        List<Cliente> lista = new ArrayList<>();
+        ConexaoJDBC conexaoJDBC = new ConexaoJDBC();
 
-                while (rs.next()) {
-                    Cliente c = new Cliente();
-                    c.setIdCliente(rs.getInt("idCliente"));
-                    c.setNomeCliente(rs.getString("nomeCliente"));
-                    c.setCpf(rs.getString("cpf"));
-                    c.setDataNascimento(rs.getDate("dataNascimento"));
-                    c.setEmail(rs.getString("email"));
-                    c.setDataCadastro(rs.getTimestamp("dataCadastro"));
-                    c.setObservacao(rs.getString("observacao"));
-                    c.setAtivo(rs.getBoolean("ativo"));
-                    c.setFkEndereco(rs.getInt("fk_endereco"));
+        try {
+            conexaoJDBC.conectar();
+            Connection conn = conexaoJDBC.getConexao();
 
-                    // Captura a string de telefones concatenados do banco
-                    String tels = rs.getString("todos_telefones");
-                    if (tels == null || tels.trim().isEmpty()) {
-                        c.setTelefonesFormatados("Nenhum cadastrado");
-                    } else {
-                        c.setTelefonesFormatados(tels);
+            if (conn != null) {
+
+                try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+
+                    while (rs.next()) {
+                        Cliente c = new Cliente();
+                        c.setIdCliente(rs.getInt("idCliente"));
+                        c.setNomeCliente(rs.getString("nomeCliente"));
+                        c.setCpf(rs.getString("cpf"));
+                        c.setDataNascimento(rs.getDate("dataNascimento"));
+                        c.setEmail(rs.getString("email"));
+                        c.setDataCadastro(rs.getTimestamp("dataCadastro"));
+                        c.setObservacao(rs.getString("observacao"));
+                        c.setAtivo(rs.getBoolean("ativo"));
+                        c.setFkEndereco(rs.getInt("fk_endereco"));
+
+                        String tels = rs.getString("todos_telefones");
+                        if (tels == null || tels.trim().isEmpty()) {
+                            c.setTelefonesFormatados("Nenhum cadastrado");
+                        } else {
+                            c.setTelefonesFormatados(tels);
+                        }
+
+                        lista.add(c);
                     }
-
-                    lista.add(c);
                 }
             }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar clientes: " + e.getMessage(), e);
+        } finally {
+            conexaoJDBC.desconectar();
         }
-    } catch (SQLException e) {
-        throw new RuntimeException("Erro ao listar clientes: " + e.getMessage(), e);
-    } finally {
-        conexaoJDBC.desconectar();
+        return lista;
     }
-    return lista;
-}
-
 
     public void excluir(int idCliente) {
         String sql = "DELETE FROM cliente WHERE idCliente = ?";
@@ -171,86 +167,83 @@ public class ClienteDAO {
         }
     }
 
-  public List<Cliente> pesquisarPorNome(String nomeBusca) {
-    // Query atualizada trazendo a junção de telefones com suporte ao filtro LIKE
-    String sql = "SELECT c.*, GROUP_CONCAT(CONCAT('(', t.ddd, ') ', t.telefone) SEPARATOR ', ') AS todos_telefones "
-               + "FROM cliente c "
-               + "LEFT JOIN telefone t ON c.idCliente = t.fk_cliente "
-               + "WHERE c.nomeCliente LIKE ? "
-               + "GROUP BY c.idCliente "
-               + "ORDER BY c.nomeCliente";
-               
-    List<Cliente> lista = new ArrayList<>();
-    ConexaoJDBC conexaoJDBC = new ConexaoJDBC();
+    public List<Cliente> pesquisarPorNome(String nomeBusca) {
 
-    try {
-        conexaoJDBC.conectar();
-        Connection conn = conexaoJDBC.getConexao();
+        String sql = "SELECT c.*, GROUP_CONCAT(CONCAT('(', t.ddd, ') ', t.telefone) SEPARATOR ', ') AS todos_telefones "
+                + "FROM cliente c "
+                + "LEFT JOIN telefone t ON c.idCliente = t.fk_cliente "
+                + "WHERE c.nomeCliente LIKE ? "
+                + "GROUP BY c.idCliente "
+                + "ORDER BY c.nomeCliente";
 
-        if (conn != null) {
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                // Mantém o curinga '%' para buscar por qualquer parte do nome digitado
-                stmt.setString(1, "%" + nomeBusca + "%");
+        List<Cliente> lista = new ArrayList<>();
+        ConexaoJDBC conexaoJDBC = new ConexaoJDBC();
 
-                try (ResultSet rs = stmt.executeQuery()) {
-                    while (rs.next()) {
-                        Cliente c = new Cliente();
-                        c.setIdCliente(rs.getInt("idCliente"));
-                        c.setNomeCliente(rs.getString("nomeCliente"));
-                        c.setCpf(rs.getString("cpf"));
-                        c.setDataNascimento(rs.getDate("dataNascimento"));
-                        c.setEmail(rs.getString("email"));
-                        c.setDataCadastro(rs.getTimestamp("dataCadastro")); // Adicionado para manter a tabela idêntica
-                        c.setObservacao(rs.getString("observacao"));
-                        c.setAtivo(rs.getBoolean("ativo"));
-                        c.setFkEndereco(rs.getInt("fk_endereco"));
+        try {
+            conexaoJDBC.conectar();
+            Connection conn = conexaoJDBC.getConexao();
 
-                        // Captura os múltiplos telefones mesmo durante a filtragem de pesquisa
-                        String tels = rs.getString("todos_telefones");
-                        if (tels == null || tels.trim().isEmpty()) {
-                            c.setTelefonesFormatados("Nenhum cadastrado");
-                        } else {
-                            c.setTelefonesFormatados(tels);
+            if (conn != null) {
+                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                    stmt.setString(1, "%" + nomeBusca + "%");
+
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        while (rs.next()) {
+                            Cliente c = new Cliente();
+                            c.setIdCliente(rs.getInt("idCliente"));
+                            c.setNomeCliente(rs.getString("nomeCliente"));
+                            c.setCpf(rs.getString("cpf"));
+                            c.setDataNascimento(rs.getDate("dataNascimento"));
+                            c.setEmail(rs.getString("email"));
+                            c.setDataCadastro(rs.getTimestamp("dataCadastro"));
+                            c.setObservacao(rs.getString("observacao"));
+                            c.setAtivo(rs.getBoolean("ativo"));
+                            c.setFkEndereco(rs.getInt("fk_endereco"));
+
+                            String tels = rs.getString("todos_telefones");
+                            if (tels == null || tels.trim().isEmpty()) {
+                                c.setTelefonesFormatados("Nenhum cadastrado");
+                            } else {
+                                c.setTelefonesFormatados(tels);
+                            }
+
+                            lista.add(c);
                         }
-
-                        lista.add(c);
                     }
                 }
             }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao filtrar clientes do banco: " + e.getMessage(), e);
+        } finally {
+            conexaoJDBC.desconectar();
         }
-    } catch (SQLException e) {
-        throw new RuntimeException("Erro ao filtrar clientes do banco: " + e.getMessage(), e);
-    } finally {
-        conexaoJDBC.desconectar();
+        return lista;
     }
-    return lista;
-}
-  
-  // MÉTODO COMPATÍVEL: Busca se o nome do cliente existe no banco (Ignora maiúsculas/minúsculas)
-public boolean existeClientePorNome(String nomeBusca) {
-    // Busca na coluna correta do seu banco: 'nomeCliente' ✨
-    String sql = "SELECT idCliente FROM cliente WHERE LOWER(nomeCliente) = LOWER(?) AND ativo = TRUE";
-    conexao.ConexaoJDBC conexaoJDBC = new conexao.ConexaoJDBC();
 
-    try {
-        conexaoJDBC.conectar();
-        java.sql.Connection conn = conexaoJDBC.getConexao();
+    public boolean existeClientePorNome(String nomeBusca) {
 
-        if (conn != null) {
-            try (java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, nomeBusca.trim());
-                try (java.sql.ResultSet rs = stmt.executeQuery()) {
-                    return rs.next(); // Retorna TRUE se achou o cliente, FALSE se não achou!
+        String sql = "SELECT idCliente FROM cliente WHERE LOWER(nomeCliente) = LOWER(?) AND ativo = TRUE";
+        conexao.ConexaoJDBC conexaoJDBC = new conexao.ConexaoJDBC();
+
+        try {
+            conexaoJDBC.conectar();
+            java.sql.Connection conn = conexaoJDBC.getConexao();
+
+            if (conn != null) {
+                try (java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+                    stmt.setString(1, nomeBusca.trim());
+                    try (java.sql.ResultSet rs = stmt.executeQuery()) {
+                        return rs.next();
+                    }
                 }
             }
+        } catch (java.sql.SQLException e) {
+            throw new RuntimeException("Erro ao verificar cliente por nome: " + e.getMessage(), e);
+        } finally {
+            conexaoJDBC.desconectar();
         }
-    } catch (java.sql.SQLException e) {
-        throw new RuntimeException("Erro ao verificar cliente por nome: " + e.getMessage(), e);
-    } finally {
-        conexaoJDBC.desconectar();
+        return false;
     }
-    return false;
-}
-
 
 }

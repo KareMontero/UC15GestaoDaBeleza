@@ -10,7 +10,6 @@ import java.util.List;
 
 public class TelefoneDAO {
 
-    // Método útil para buscar todos os telefones vinculados a um funcionário específico
     public List<Telefone> buscarPorFuncionario(int idFuncionario) {
         String sql = "SELECT * FROM telefone WHERE fk_funcionario = ?";
         List<Telefone> lista = new ArrayList<>();
@@ -32,7 +31,7 @@ public class TelefoneDAO {
                     t.setDdd(rs.getString("ddd"));
                     t.setTelefone(rs.getString("telefone"));
                     t.setFkFuncionario(rs.getInt("fk_funcionario"));
-                    
+
                     lista.add(t);
                 }
                 rs.close();
@@ -45,8 +44,7 @@ public class TelefoneDAO {
         }
         return lista;
     }
-    
-        // ADICIONE ESTE MÉTODO DENTRO DE TelefoneDAO.java:
+
     public List<Telefone> buscarPorCliente(int idCliente) {
         String sql = "SELECT * FROM telefone WHERE fk_cliente = ?";
         List<Telefone> lista = new ArrayList<>();
@@ -68,7 +66,7 @@ public class TelefoneDAO {
                     t.setDdd(rs.getString("ddd"));
                     t.setTelefone(rs.getString("telefone"));
                     t.setFkCliente(rs.getInt("fk_cliente"));
-                    
+
                     lista.add(t);
                 }
                 rs.close();
@@ -81,8 +79,8 @@ public class TelefoneDAO {
         }
         return lista;
     }
-    
-        public List<Telefone> buscarPorFornecedor(int idFornecedor) {
+
+    public List<Telefone> buscarPorFornecedor(int idFornecedor) {
         String sql = "SELECT * FROM telefone WHERE fk_fornecedor = ?";
         List<Telefone> lista = new java.util.ArrayList<>();
         conexao.ConexaoJDBC conexaoJDBC = new conexao.ConexaoJDBC();
@@ -103,7 +101,7 @@ public class TelefoneDAO {
                     t.setDdd(rs.getString("ddd"));
                     t.setTelefone(rs.getString("telefone"));
                     t.setFkFornecedor(rs.getInt("fk_fornecedor"));
-                    
+
                     lista.add(t);
                 }
                 rs.close();
@@ -116,6 +114,5 @@ public class TelefoneDAO {
         }
         return lista;
     }
-
 
 }

@@ -6,7 +6,7 @@ public class Servico {
     private String servico;
     private String descricao;
     private double preco;
-    private String categoria; // Pode usar String ou um ENUM em Java
+    private String categoria;
     private boolean estoqueProduto;
     private int qtidadeProduto;
     private boolean ativo;
@@ -88,6 +88,5 @@ public class Servico {
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
     }
-    
-    
+
 }

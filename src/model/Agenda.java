@@ -3,18 +3,18 @@ package model;
 import java.sql.Timestamp;
 
 public class Agenda {
-    
-     private int idAgenda;
-    private Timestamp dataHora; // Representa o DATETIME do MySQL
-    private Cliente cliente;     // Objeto Cliente completo
-    private Funcionario funcionario; // Objeto Funcionario completo
-    private Servico servico;     // Objeto Servico completo
-    private Usuario usuario;     // Usuário que registrou
-    private String status;       // 'marcado', 'confirmado', etc.
+
+    private int idAgenda;
+    private Timestamp dataHora;
+    private Cliente cliente;
+    private Funcionario funcionario;
+    private Servico servico;
+    private Usuario usuario;
+    private String status;
     private double precoServico;
     private double valorProduto;
     private double desconto;
-    private double valorTotal;   // Campo calculado no banco, mas útil no Java
+    private double valorTotal;
     private String observacao;
 
     public Agenda() {
@@ -131,5 +131,4 @@ public class Agenda {
         this.observacao = observacao;
     }
 
-    
 }

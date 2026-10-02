@@ -8,7 +8,6 @@ public class CadastroServico extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CadastroServico.class.getName());
     private model.Usuario usuarioLogado;
 
-    // Adicione isto perto da declaração do 'usuarioLogado'
     private javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter;
 
     public CadastroServico(model.Usuario usuario) {
@@ -216,43 +215,35 @@ public class CadastroServico extends javax.swing.JFrame {
     private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
 
         try {
-            // 1. VALIDAÇÃO: Impede que o usuário salve campos obrigatórios em branco
+
             if (txtServico.getText().trim().isEmpty() || txtPreco.getText().trim().isEmpty()) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Por favor, preencha o Nome do Serviço e o Preço!");
                 return;
             }
 
-            // 2. CAPTURA: Lê os dados que você digitou nos componentes da tela
             String nomeServico = txtServico.getText().trim();
             String descricao = txtDescricao.getText().trim();
 
-            // Converte o texto do preço para número decimal (e aceita tanto ponto quanto vírgula)
             double preco = Double.parseDouble(txtPreco.getText().trim().replace(",", "."));
 
-            // Pega a categoria selecionada no ComboBox ('manicure', 'depilacao', etc.)
             String categoria = cbCategoria.getSelectedItem().toString();
 
-            // Verifica se a caixinha de estoque está marcada (true) ou desmarcada (false)
             boolean consomeEstoque = chkEstoque.isSelected();
 
-            // 3. MODELO: Cria o objeto de Serviço e coloca os dados nele usando os SETS
             Servico novoServico = new Servico();
             novoServico.setServico(nomeServico);
             novoServico.setDescricao(descricao);
             novoServico.setPreco(preco);
             novoServico.setCategoria(categoria);
             novoServico.setEstoqueProduto(consomeEstoque);
-            novoServico.setQtidadeProduto(0); // Valor padrão inicial
-            novoServico.setAtivo(true);       // Ativo por padrão
+            novoServico.setQtidadeProduto(0);
+            novoServico.setAtivo(true);
 
-            // 4. BANCO DE DADOS: Instancia o seu DAO e manda gravar
             ServicoDAO dao = new ServicoDAO();
             dao.Adicionar(novoServico);
 
-            // 5. SUCESSO: Avisa que deu certo e limpa todos os campos da tela
             javax.swing.JOptionPane.showMessageDialog(this, "Serviço '" + nomeServico + "' cadastrado com sucesso!");
 
-            // Limpa os campos para o próximo cadastro
             txtServico.setText("");
             txtDescricao.setText("");
             txtPreco.setText("");
@@ -260,15 +251,14 @@ public class CadastroServico extends javax.swing.JFrame {
             chkEstoque.setSelected(false);
 
         } catch (NumberFormatException e) {
-            // Trata o erro caso o usuário tente digitar letras no campo de preço
+
             javax.swing.JOptionPane.showMessageDialog(this, "Erro: O preço inserido é inválido! Use apenas números.");
         } catch (Exception e) {
-            // Exibe qualquer outro erro inesperado que possa acontecer
+
             javax.swing.JOptionPane.showMessageDialog(this, "Erro ao salvar serviço: " + e.getMessage());
         }
 
         atualizarTabelaServicos();
-
     }//GEN-LAST:event_btnSalvarActionPerformed
 
     private void btnTelaInicialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTelaInicialActionPerformed
@@ -290,76 +280,69 @@ public class CadastroServico extends javax.swing.JFrame {
     }//GEN-LAST:event_btnPesquisarActionPerformed
 
     private void txtPesquisarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPesquisarKeyReleased
-                                            
-    String texto = txtPesquisar.getText().trim();
-    
-    if (texto.isEmpty()) {
-        sorter.setRowFilter(null); // Mostra tudo se o campo estiver vazio
-    } else {
-        // Filtra pelo Nome do Serviço (Coluna 1) ignorando maiúsculas/minúsculas (?i)
-        sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + texto, 1));
-    }
-                                      
 
+        String texto = txtPesquisar.getText().trim();
+
+        if (texto.isEmpty()) {
+            sorter.setRowFilter(null);
+        } else {
+
+            sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + texto, 1));
+        }
     }//GEN-LAST:event_txtPesquisarKeyReleased
 
     private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
-                                        
-    // 1. Verifica se o usuário selecionou uma linha na tabela
-    int linhaSelecionada = tblServicos.getSelectedRow();
-    
-    if (linhaSelecionada == -1) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Por favor, selecione um serviço na tabela para excluir.");
-        return;
-    }
-    
-    // Convertemos o índice da linha da JTable para o índice correto do modelo (importante quando a tabela está filtrada!)
-    int linhaModelo = tblServicos.convertRowIndexToModel(linhaSelecionada);
-    
-    // 2. Pega o ID (Coluna 0) e o Nome (Coluna 1) usando a linha correta do modelo
-    int id = (int) tblServicos.getModel().getValueAt(linhaModelo, 0);
-    String nomeServico = tblServicos.getModel().getValueAt(linhaModelo, 1).toString();
-    
-    // 3. Pede a confirmação do usuário (boa prática de UX)
-    int confirmar = javax.swing.JOptionPane.showConfirmDialog(this, 
-            "Tem certeza que deseja excluir o serviço '" + nomeServico + "'?", 
-            "Confirmar Exclusão", javax.swing.JOptionPane.YES_NO_OPTION);
-            
-    if (confirmar == javax.swing.JOptionPane.YES_OPTION) {
-        try {
-            // 4. Instancia o seu DAO e manda deletar do MySQL
-            ServicoDAO dao = new ServicoDAO();
-            
-            // ATENÇÃO: Verifique na sua classe ServicoDAO se o seu método se chama 'excluir' ou 'deletar'
-            dao.excluir(id); 
-            
-            javax.swing.JOptionPane.showMessageDialog(this, "Serviço excluído com sucesso!");
-            
-            // 5. Atualiza a tabela na tela e limpa a pesquisa (caso tenha algo digitado)
-            if (txtPesquisar != null) txtPesquisar.setText("");
-            if (sorter != null) sorter.setRowFilter(null);
-            
-            atualizarTabelaServicos();
-            
-        } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao excluir serviço: " + e.getMessage());
+
+        int linhaSelecionada = tblServicos.getSelectedRow();
+
+        if (linhaSelecionada == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, selecione um serviço na tabela para excluir.");
+            return;
         }
-    }
+
+        int linhaModelo = tblServicos.convertRowIndexToModel(linhaSelecionada);
+
+        int id = (int) tblServicos.getModel().getValueAt(linhaModelo, 0);
+        String nomeServico = tblServicos.getModel().getValueAt(linhaModelo, 1).toString();
+
+        int confirmar = javax.swing.JOptionPane.showConfirmDialog(this,
+                "Tem certeza que deseja excluir o serviço '" + nomeServico + "'?",
+                "Confirmar Exclusão", javax.swing.JOptionPane.YES_NO_OPTION);
+
+        if (confirmar == javax.swing.JOptionPane.YES_OPTION) {
+            try {
+
+                ServicoDAO dao = new ServicoDAO();
+
+                dao.excluir(id);
+
+                javax.swing.JOptionPane.showMessageDialog(this, "Serviço excluído com sucesso!");
+
+                if (txtPesquisar != null) {
+                    txtPesquisar.setText("");
+                }
+                if (sorter != null) {
+                    sorter.setRowFilter(null);
+                }
+
+                atualizarTabelaServicos();
+
+            } catch (Exception e) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Erro ao excluir serviço: " + e.getMessage());
+            }
+        }
 
     }//GEN-LAST:event_btnExcluirActionPerformed
 
     private void atualizarTabelaServicos() {
-        // 1. Instancia o DAO para buscar os dados do banco
+
         ServicoDAO dao = new ServicoDAO();
         java.util.List<Servico> lista = dao.listarTodos();
 
-        // 2. Pega o modelo da tabela configurada na tela (DefaultTableModel)
         javax.swing.table.DefaultTableModel modeloDefault = (javax.swing.table.DefaultTableModel) tblServicos.getModel();
 
-        // 3. Limpa as linhas antigas da tabela para não duplicar os dados
         modeloDefault.setRowCount(0);
 
-        // 4. Percorre a lista de serviços vindos do banco e joga dentro da tabela da tela
         for (Servico s : lista) {
             Object[] linha = {
                 s.getIdServico(),
@@ -367,7 +350,7 @@ public class CadastroServico extends javax.swing.JFrame {
                 s.getDescricao(),
                 s.getPreco(),
                 s.getCategoria(),
-                s.isEstoqueProduto() ? "Sim" : "Não" // Deixa o visual mais amigável
+                s.isEstoqueProduto() ? "Sim" : "Não"
             };
             modeloDefault.addRow(linha);
         }

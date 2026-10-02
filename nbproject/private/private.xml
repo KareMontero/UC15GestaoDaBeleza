@@ -3,8 +3,52 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/view/CadastroServico.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/view/TelaInicial.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/Agenda.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/AgendaDAO.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/view/TelaAgenda.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/ClienteDAO.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/view/TelaRelatorio.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/MovimentoDeEstoque.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/BackupLogDAO.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/view/TelaRelatorioBackups.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/MovimentoDeEstoqueDAO.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/LogSistemaDAO.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/view/TelaRelatorioLogs.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/conexao/ConexaoJDBC.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/conexao/Main.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/BackupLog.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/Cliente.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/Endereco.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/EnderecoDAO.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/Fornecedor.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/FornecedorDAO.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/Funcionario.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/FuncionarioDAO.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/KitServico.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/KitServicoDAO.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/LogSistema.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/Produto.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/ProdutoDAO.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/Servico.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/ServicoDAO.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/Telefone.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/TelefoneDAO.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/Usuario.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/model/UsuarioDAO.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/view/CadastroCliente.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/view/CadastroFornecedor.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/view/CadastroFuncionario.java</file>
             <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/view/CadastroKitServico.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/view/CadastroProduto.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/view/CadastroServico.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/view/ListagemClientes.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/view/ListagemFornecedores.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/view/ListagemFuncionarios.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/view/ListagemProdutos.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/view/TelaEndereco.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/view/TelaRelatorioEstoque.java</file>
+            <file>file:/C:/Users/karen/Documents/GestaoDaBelezaJava/src/view/TelaValidacaoUsuario.java</file>
         </group>
     </open-files>
 </project-private>

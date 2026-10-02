@@ -6,8 +6,6 @@ import javax.swing.table.TableRowSorter;
 import java.util.List;
 import model.Cliente;
 import model.ClienteDAO;
-import model.Telefone;
-import model.TelefoneDAO;
 import model.Usuario;
 
 public class ListagemClientes extends javax.swing.JFrame {
@@ -20,9 +18,9 @@ public class ListagemClientes extends javax.swing.JFrame {
      * Creates new form ListagemClientes
      */
     public ListagemClientes(Usuario usuario) {
-    this.usuarioLogado = usuario;
+        this.usuarioLogado = usuario;
         initComponents();
-    
+
         jScrollPane1.setViewportView(tblClientes);
         preencherTabela();
     }
@@ -157,11 +155,12 @@ public class ListagemClientes extends javax.swing.JFrame {
 
         CadastroCliente telaCadastro = new CadastroCliente(this.usuarioLogado);
         telaCadastro.setVisible(true);
-        this.dispose(); // Fecha a tela de listagem atual
+        this.dispose();
 
     }//GEN-LAST:event_btnCadastroClienteActionPerformed
 
     private void btnExcluirClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirClienteActionPerformed
+
         int linhaSelecionada = tblClientes.getSelectedRow();
 
         if (linhaSelecionada == -1) {
@@ -173,68 +172,65 @@ public class ListagemClientes extends javax.swing.JFrame {
 
         if (confirmacao == JOptionPane.YES_OPTION) {
             try {
-                // Proteção do índice para quando a tabela estiver filtrada/pesquisada
+
                 int linhaRealDoModelo = tblClientes.convertRowIndexToModel(linhaSelecionada);
                 int idCliente = Integer.parseInt(tblClientes.getModel().getValueAt(linhaRealDoModelo, 0).toString());
                 model.ClienteDAO dao = new model.ClienteDAO();
                 dao.excluir(idCliente);
 
                 JOptionPane.showMessageDialog(this, "Cliente excluído com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-                preencherTabela(); // Atualiza a tabela para sumir o registro
+                preencherTabela();
 
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Erro ao excluir cliente:\n" + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
         }
-
     }//GEN-LAST:event_btnExcluirClienteActionPerformed
 
     private void btnVoltarTelaInicialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarTelaInicialActionPerformed
+
         TelaInicial telaInicial = new TelaInicial(this.usuarioLogado);
         telaInicial.setLocationRelativeTo(null);
         telaInicial.setVisible(true);
         this.dispose();
+
     }//GEN-LAST:event_btnVoltarTelaInicialActionPerformed
 
     private void btnPesquisarNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarNomeActionPerformed
+
         filtrarTabela();
+
     }//GEN-LAST:event_btnPesquisarNomeActionPerformed
 
     private void txtClientePesquisarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtClientePesquisarKeyReleased
-                                            
-    String termoBusca = txtClientePesquisar.getText().trim();
 
-    ClienteDAO dao = new ClienteDAO();
-    List<Cliente> listaFiltrada;
+        String termoBusca = txtClientePesquisar.getText().trim();
 
-    // Se o campo estiver vazio, traz tudo. Se tiver texto, filtra.
-    if (termoBusca.isEmpty()) {
-        listaFiltrada = dao.listarTodos();
-    } else {
-        listaFiltrada = dao.pesquisarPorNome(termoBusca);
-    }
+        ClienteDAO dao = new ClienteDAO();
+        List<Cliente> listaFiltrada;
 
-    // Captura o modelo da sua JTable configurada na tela
-    DefaultTableModel modelo = (DefaultTableModel) tblClientes.getModel();
+        if (termoBusca.isEmpty()) {
+            listaFiltrada = dao.listarTodos();
+        } else {
+            listaFiltrada = dao.pesquisarPorNome(termoBusca);
+        }
 
-    // Limpa as linhas antigas para não duplicar dados na tela
-    modelo.setNumRows(0);
+        DefaultTableModel modelo = (DefaultTableModel) tblClientes.getModel();
 
-    // Varre a lista filtrada vinda do banco de dados e adiciona na tabela
-    for (Cliente c : listaFiltrada) {
-        String statusAtivo = c.isAtivo() ? "Ativo" : "Inativo";
+        modelo.setNumRows(0);
 
-        // Segue exatamente a mesma ordem de colunas do seu preencherTabela()
-        modelo.addRow(new Object[]{
-            c.getIdCliente(),
-            c.getNomeCliente(),
-            c.getCpf(),
-            c.getTelefonesFormatados(), // Adicionado na coluna correta!
-            c.getDataCadastro(),
-            statusAtivo
-        });
-    }
+        for (Cliente c : listaFiltrada) {
+            String statusAtivo = c.isAtivo() ? "Ativo" : "Inativo";
 
+            modelo.addRow(new Object[]{
+                c.getIdCliente(),
+                c.getNomeCliente(),
+                c.getCpf(),
+                c.getTelefonesFormatados(),
+                c.getDataCadastro(),
+                statusAtivo
+            });
+        }
     }//GEN-LAST:event_txtClientePesquisarKeyReleased
 
     /**
@@ -263,33 +259,31 @@ public class ListagemClientes extends javax.swing.JFrame {
     }
 
     private void preencherTabela() {
-    DefaultTableModel modeloTabela = (DefaultTableModel) tblClientes.getModel();
-    modeloTabela.setNumRows(0);
+        DefaultTableModel modeloTabela = (DefaultTableModel) tblClientes.getModel();
+        modeloTabela.setNumRows(0);
 
-    ClienteDAO dao = new ClienteDAO();
-    // Lembre-se de usar o listarTodos() atualizado com LEFT JOIN e GROUP_CONCAT que passamos antes!
-    List<Cliente> lista = dao.listarTodos(); 
+        ClienteDAO dao = new ClienteDAO();
 
-    for (Cliente c : lista) {
-        String statusAtivo = c.isAtivo() ? "Ativo" : "Inativo";
+        List<Cliente> lista = dao.listarTodos();
 
-        // Puxa o texto formatado que o banco de dados já entregou prontinho
-        String telefonesExibicao = c.getTelefonesFormatados(); 
+        for (Cliente c : lista) {
+            String statusAtivo = c.isAtivo() ? "Ativo" : "Inativo";
 
-        modeloTabela.addRow(new Object[]{
-            c.getIdCliente(),
-            c.getNomeCliente(),
-            c.getCpf(),
-            telefonesExibicao,
-            c.getDataCadastro(),
-            statusAtivo
-        });
+            String telefonesExibicao = c.getTelefonesFormatados();
+
+            modeloTabela.addRow(new Object[]{
+                c.getIdCliente(),
+                c.getNomeCliente(),
+                c.getCpf(),
+                telefonesExibicao,
+                c.getDataCadastro(),
+                statusAtivo
+            });
+        }
+
+        sorter = new TableRowSorter<>(modeloTabela);
+        tblClientes.setRowSorter(sorter);
     }
-
-    sorter = new TableRowSorter<>(modeloTabela);
-    tblClientes.setRowSorter(sorter);
-}
-
 
     private void filtrarTabela() {
 
