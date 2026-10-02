@@ -1,6 +1,7 @@
 package view;
 
 import model.Usuario;
+import view.TelaAgenda;
 
 /**
  *
@@ -242,6 +243,9 @@ public class TelaInicial extends javax.swing.JFrame {
 
     private void btnAgendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgendaActionPerformed
 
+        TelaAgenda cadAgenda = new TelaAgenda(this.usuarioLogado);
+        cadAgenda.setLocationRelativeTo(this);
+        cadAgenda.setVisible(true);
 
     }//GEN-LAST:event_btnAgendaActionPerformed
 

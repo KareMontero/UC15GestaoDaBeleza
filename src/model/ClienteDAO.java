@@ -225,5 +225,32 @@ public class ClienteDAO {
     }
     return lista;
 }
+  
+  // MÉTODO COMPATÍVEL: Busca se o nome do cliente existe no banco (Ignora maiúsculas/minúsculas)
+public boolean existeClientePorNome(String nomeBusca) {
+    // Busca na coluna correta do seu banco: 'nomeCliente' ✨
+    String sql = "SELECT idCliente FROM cliente WHERE LOWER(nomeCliente) = LOWER(?) AND ativo = TRUE";
+    conexao.ConexaoJDBC conexaoJDBC = new conexao.ConexaoJDBC();
+
+    try {
+        conexaoJDBC.conectar();
+        java.sql.Connection conn = conexaoJDBC.getConexao();
+
+        if (conn != null) {
+            try (java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, nomeBusca.trim());
+                try (java.sql.ResultSet rs = stmt.executeQuery()) {
+                    return rs.next(); // Retorna TRUE se achou o cliente, FALSE se não achou!
+                }
+            }
+        }
+    } catch (java.sql.SQLException e) {
+        throw new RuntimeException("Erro ao verificar cliente por nome: " + e.getMessage(), e);
+    } finally {
+        conexaoJDBC.desconectar();
+    }
+    return false;
+}
+
 
 }
